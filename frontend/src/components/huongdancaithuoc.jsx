@@ -260,7 +260,11 @@ const HuongDanCaiThuoc = () => {
         <Link to="/gioithieu">Về chúng tôi</Link>
         <Link to="/huongdancaithuoc">Hướng dẫn cai thuốc</Link>
         <Link to="/tuvan">Dịch vụ</Link>
+<<<<<<< HEAD
         <a href="huanluyenvien.html">Dành cho huấn luyện viên</a>
+=======
+        <a href="huanluyenvien_home">Dành cho huấn luyện viên</a>
+>>>>>>> 2a4b59d79ee19f84f4d9116fef457c17d7124194
         <Link to="/blog">Câu chuyện thành công</Link>
         <Link to="/lienhe">Liên hệ</Link>
       </nav>
@@ -333,8 +337,13 @@ const HuongDanCaiThuoc = () => {
 
       <div id="overlay"></div>
       <div id="sidebar">
+<<<<<<< HEAD
         <div className="sidebar-item" onClick={() => goTo('canhan.html')}>👤 Trang cá nhân</div>
         <div className="sidebar-item" onClick={() => goTo('member.html')}>💬 Dịch vụ khách hàng</div>
+=======
+        <div className="sidebar-item" onClick={() => goTo('/canhan')}>👤 Trang cá nhân</div>
+        <div className="sidebar-item" onClick={() => goTo('/member')}>💬 Dịch vụ khách hàng</div>
+>>>>>>> 2a4b59d79ee19f84f4d9116fef457c17d7124194
         <div className="sidebar-item" onClick={dangXuat}>🚪 Đăng xuất</div>
       </div>
     </>

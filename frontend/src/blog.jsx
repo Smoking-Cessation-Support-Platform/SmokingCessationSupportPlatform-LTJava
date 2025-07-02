@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 vakypro
 vakypro
 Online
@@ -31,12 +29,10 @@ message.txt
 Chú ong chăm chỉ
 minhmoi.
  
->>>>>>> 2a4b59d79ee19f84f4d9116fef457c17d7124194
 import React, { useEffect } from "react";
 import { Link } from 'react-router-dom'; 
 import { useNavigate } from "react-router-dom"; 
-
-const LienHe = () => {
+const CauChuyenThanhCong = () => {
   const navigate = useNavigate(); 
 
   useEffect(() => {
@@ -73,7 +69,7 @@ const LienHe = () => {
     const navLinks = document.querySelectorAll('nav a');
 
     navLinks.forEach(link => {
-      if (link.getAttribute('href') && currentPath.includes(link.getAttribute('href').replace('.html', ''))) {
+      if (link.getAttribute('href') && link.getAttribute('href').includes(currentPath)) {
         link.classList.add('nav-active');
       }
     });
@@ -82,7 +78,7 @@ const LienHe = () => {
       if (menuIcon) menuIcon.removeEventListener('click', openSidebar);
       if (overlay) overlay.removeEventListener('click', closeSidebar);
     };
-  }, []);
+  }, []); 
 
   const checkLogin = () => {
     const isMember = localStorage.getItem('isMember') === 'true';
@@ -119,6 +115,33 @@ const LienHe = () => {
     const targetPath = reactPageMap[page] || `/${page.replace('.html', '')}`;
     navigate(targetPath);
   };
+
+  const successStories = [
+    {
+      name: "Ông Nguyễn Văn A",
+      age: 55,
+      duration: "6 tháng",
+      quote: "Tôi đã cai thuốc nhờ sự kiên trì và hỗ trợ từ chương trình. Sức khỏe của tôi đã cải thiện rõ rệt, tôi cảm thấy mình trẻ hơn rất nhiều."
+    },
+    {
+      name: "Bà Trần Thị B",
+      age: 48,
+      duration: "1 năm",
+      quote: "Tin nhắn động viên từ chương trình đã giúp tôi vượt qua cơn thèm thuốc. Tôi cảm thấy tự hào vì đã làm được điều này."
+    },
+    {
+      name: "Anh Lê Văn C",
+      age: 38,
+      method: "liệu pháp NRT",
+      quote: "Tôi khuyên mọi người hãy thử phương pháp này. Nó thực sự hiệu quả và giúp tôi vượt qua cơn thèm thuốc."
+    },
+    {
+      name: "Chị Mai Thị D",
+      age: 42,
+      duration: "3 tháng",
+      quote: "Sức khỏe tôi đã thay đổi tích cực mỗi ngày. Tôi cảm thấy mình có nhiều năng lượng hơn."
+    }
+  ];
 
   return (
     <>
@@ -193,9 +216,20 @@ const LienHe = () => {
           text-align: center;
           margin-bottom: 20px;
         }
+        h2 {
+          color: #b71c1c;
+          margin-top: 30px;
+        }
         p {
           margin-bottom: 15px;
           font-size: 16px;
+        }
+        .story {
+          margin-bottom: 30px;
+          padding: 15px;
+          border: 1px solid #b71c1c;
+          border-radius: 8px;
+          background: #f9f9f9;
         }
         footer {
           background: #004d40;
@@ -203,12 +237,6 @@ const LienHe = () => {
           padding: 20px;
           text-align: center;
           flex-shrink: 0;
-        }
-        .contact-info {
-          margin-top: 20px;
-        }
-        .contact-info p {
-          margin: 5px 0;
         }
 
         .auth-links {
@@ -295,25 +323,26 @@ const LienHe = () => {
         <Link to="/gioithieu">Về chúng tôi</Link>
         <Link to="/huongdancaithuoc">Hướng dẫn cai thuốc</Link>
         <Link to="/tuvan">Dịch vụ</Link>
-<<<<<<< HEAD
-        <a href="huanluyenvien.html">Dành cho huấn luyện viên</a>
-=======
         <a href="huanluyenvien_home">Dành cho huấn luyện viên</a>
->>>>>>> 2a4b59d79ee19f84f4d9116fef457c17d7124194
-        <Link to="/blog">Câu chuyện thành công</Link>
-        <Link to="/lienhe" className="nav-active">Liên hệ</Link>
+        <Link to="/blog" className="nav-active">Câu chuyện thành công</Link>
+        <Link to="/lienhe">Liên hệ</Link>
       </nav>
 
       <main>
-        <h1>Liên Hệ Với Chúng Tôi</h1>
-        <p>Nếu bạn có bất kỳ câu hỏi nào hoặc cần thêm thông tin, vui lòng liên hệ với chúng tôi qua các phương thức dưới đây:</p>
+        <h1>Câu Chuyện Thành Công</h1>
 
-        <div className="contact-info">
-          <h2>Thông Tin Liên Hệ</h2>
-          <p>Email: <a href="mailto:nhubdq3680@ut.edu.vn">nhubdq3680@ut.edu.vn</a></p>
-          <p>Điện thoại: 0364155024</p>
-          <p>Địa chỉ: 70 Đ. Tô Ký, Tân Chánh Hiệp, Quận 12, Hồ Chí Minh</p>
-        </div>
+        {successStories.map((story, index) => (
+          <div className="story" key={index}>
+            <h2>{story.name}</h2>
+            <p>
+              Tuổi {story.age}, đã bỏ thuốc lá được {story.duration}. {story.method ? `Anh/Chị cai thuốc thành công nhờ ${story.method}. ` : ''}
+              {story.name.startsWith("Ông") || story.name.startsWith("Anh") ? "Ông/Anh" : "Bà/Chị"} chia sẻ: “{story.quote}”
+            </p>
+          </div>
+        ))}
+
+        <h2>Chia Sẻ Câu Chuyện Của Bạn</h2>
+        <p>Nếu bạn có câu chuyện thành công trong việc cai thuốc lá, hãy chia sẻ với chúng tôi qua email: <a href="mailto:info@caithuoctot.vn">info@caithuoctot.vn</a></p>
       </main>
 
       <footer>
@@ -337,4 +366,4 @@ const LienHe = () => {
   );
 };
 
-export default LienHe;
+export default CauChuyenThanhCong;

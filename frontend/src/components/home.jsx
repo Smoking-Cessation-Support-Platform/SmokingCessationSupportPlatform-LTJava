@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom'; // Import Link và useNavigate
 
@@ -13,10 +14,60 @@ const Home = () => {
     } else {
       alert("Bạn cần đăng nhập để sử dụng tính năng này.");
       navigate("/login");
+=======
+import React, { useEffect } from "react";
+import { Link } from 'react-router-dom';
+
+const Home = () => {
+  useEffect(() => {
+    const isMember = localStorage.getItem("isMember") === "true";
+    const authLinks = document.querySelector(".auth-links");
+    const menuIconWrapper = document.getElementById("menuIconWrapper");
+
+    if (isMember) {
+      if (authLinks) authLinks.style.display = "none";
+      if (menuIconWrapper) menuIconWrapper.style.display = "block";
+    } else {
+      if (authLinks) authLinks.style.display = "block";
+      if (menuIconWrapper) menuIconWrapper.style.display = "none";
+    }
+
+    const menuIcon = document.getElementById("menuIcon");
+    const sidebar = document.getElementById("sidebar");
+    const overlay = document.getElementById("overlay");
+
+    function openSidebar() {
+      sidebar.classList.add("open");
+      overlay.classList.add("show");
+    }
+    function closeSidebar() {
+      sidebar.classList.remove("open");
+      overlay.classList.remove("show");
+    }
+
+    if (menuIcon) menuIcon.addEventListener("click", openSidebar);
+    if (overlay) overlay.addEventListener("click", closeSidebar);
+
+    // Cleanup event listeners on unmount
+    return () => {
+      if (menuIcon) menuIcon.removeEventListener("click", openSidebar);
+      if (overlay) overlay.removeEventListener("click", closeSidebar);
+    };
+  }, []);
+
+  const checkLogin = () => {
+    const isMember = localStorage.getItem("isMember") === "true";
+    if (isMember) {
+      window.location.href = "member.html";
+    } else {
+      alert("Bạn cần đăng nhập để sử dụng tính năng này.");
+      window.location.href = "login1.html";
+>>>>>>> 2a4b59d79ee19f84f4d9116fef457c17d7124194
     }
   };
 
   const dangXuat = () => {
+<<<<<<< HEAD
     localStorage.removeItem('isMember');
     localStorage.removeItem('username');
     localStorage.removeItem('userProfile');
@@ -80,6 +131,20 @@ const Home = () => {
     <>
       <style>{`
         /* Giữ nguyên các CSS ở đây */
+=======
+    localStorage.removeItem("isMember");
+    localStorage.removeItem("username");
+    window.location.reload();
+  };
+
+  const goTo = (page) => {
+    window.location.href = page;
+  };
+
+  return (
+    <>
+      <style>{`
+>>>>>>> 2a4b59d79ee19f84f4d9116fef457c17d7124194
         * { box-sizing: border-box; }
         body {
           margin: 0;
@@ -174,11 +239,19 @@ const Home = () => {
           padding: 10px;
           background: #fff;
         }
+<<<<<<< HEAD
+=======
+
+>>>>>>> 2a4b59d79ee19f84f4d9116fef457c17d7124194
         .carousel {
           display: flex;
           gap: 20px;
           animation: scrollCarousel 20s linear infinite;
         }
+<<<<<<< HEAD
+=======
+
+>>>>>>> 2a4b59d79ee19f84f4d9116fef457c17d7124194
         .carousel-item {
           flex: 0 0 300px;
           background: #fdfdfd;
@@ -189,11 +262,19 @@ const Home = () => {
           align-items: flex-start;
           border: 1px solid #f26522;
         }
+<<<<<<< HEAD
+=======
+
+>>>>>>> 2a4b59d79ee19f84f4d9116fef457c17d7124194
         .carousel-item img {
           width: 70px;
           height: 70px;
           border-radius: 50%;
         }
+<<<<<<< HEAD
+=======
+
+>>>>>>> 2a4b59d79ee19f84f4d9116fef457c17d7124194
         @keyframes scrollCarousel {
           0% { transform: translateX(0); }
           100% { transform: translateX(-100%); }
@@ -202,13 +283,24 @@ const Home = () => {
         .auth-links {
           color: white;
         }
+<<<<<<< HEAD
+=======
+
+        /* Avatar + Sidebar */
+>>>>>>> 2a4b59d79ee19f84f4d9116fef457c17d7124194
         #menuIconWrapper {
           position: fixed;
           top: 16px;
           right: 16px;
           z-index: 1001;
+<<<<<<< HEAD
           display: none; /* ẩn mặc định, hiện khi đăng nhập */
         }
+=======
+          display: none;
+        }
+
+>>>>>>> 2a4b59d79ee19f84f4d9116fef457c17d7124194
         .circle-avatar {
           width: 48px;
           height: 48px;
@@ -221,6 +313,10 @@ const Home = () => {
           background-color: white;
           cursor: pointer;
         }
+<<<<<<< HEAD
+=======
+
+>>>>>>> 2a4b59d79ee19f84f4d9116fef457c17d7124194
         #menuIcon {
           width: 100%;
           height: 100%;
@@ -239,13 +335,22 @@ const Home = () => {
           padding: 20px;
           transition: right 0.3s ease;
         }
+<<<<<<< HEAD
         #sidebar.open {
           right: 0;
         }
+=======
+
+        #sidebar.open {
+          right: 0;
+        }
+
+>>>>>>> 2a4b59d79ee19f84f4d9116fef457c17d7124194
         .sidebar-item {
           padding: 12px 10px;
           border-bottom: 1px solid #eee;
           cursor: pointer;
+<<<<<<< HEAD
           font-size: 16px;
           user-select: none;
         }
@@ -253,6 +358,8 @@ const Home = () => {
           background-color: #f26522;
           color: white;
           border-radius: 4px;
+=======
+>>>>>>> 2a4b59d79ee19f84f4d9116fef457c17d7124194
         }
 
         #overlay {
@@ -263,6 +370,7 @@ const Home = () => {
           display: none;
           z-index: 999;
         }
+<<<<<<< HEAD
         #overlay.show {
           display: block;
         }
@@ -274,15 +382,38 @@ const Home = () => {
           text-align:center;
         }
       `}</style>
+=======
+
+        #overlay.show {
+          display: block;
+        }
+      `}</style>
+
+>>>>>>> 2a4b59d79ee19f84f4d9116fef457c17d7124194
       <header>
         <div className="topbar">
           <div className="topbar-left">
             <img src="/images1/logo.jpg" alt="Logo CaiThuocTot.vn" />
+<<<<<<< HEAD
             <div><strong>CaiThuocTot.vn</strong> - Hành trình vì sức khỏe</div>
           </div>
           <div className="auth-links" id="authLinks">
             <Link to="/register">Đăng ký</Link> |
             <Link to="/login">Đăng nhập</Link>
+=======
+            <div>
+              <strong>CaiThuocTot.vn</strong> - Hành trình vì sức khỏe
+            </div>
+          </div>
+          <div className="auth-links">
+            <Link to="/register" style={{ color: "white" }}>
+              Đăng ký
+            </Link>{" "}
+            |{" "}
+            <Link to="/login" style={{ color: "white" }}>
+              Đăng nhập
+            </Link>
+>>>>>>> 2a4b59d79ee19f84f4d9116fef457c17d7124194
           </div>
         </div>
       </header>
@@ -291,10 +422,17 @@ const Home = () => {
         <Link to="/">Trang chủ</Link>
         <Link to="/gioithieu">Về chúng tôi</Link>
         <Link to="/huongdancaithuoc">Hướng dẫn cai thuốc</Link>
+<<<<<<< HEAD
         <Link to="/tuvan">Dịch vụ</Link>
         <Link to="/huanluyenvien_home">Dành cho huấn luyện viên</Link>
         <Link to="/blog">Câu chuyện thành công</Link>
         <Link to="/lienhe">Liên hệ</Link>
+=======
+        <a href="tuvan.html">Dịch vụ</a>
+        <a href="huanluyenvien.html">Dành cho huấn luyện viên</a>
+        <a href="blog.html">Câu chuyện thành công</a>
+        <a href="lienhe.html">Liên hệ</a>
+>>>>>>> 2a4b59d79ee19f84f4d9116fef457c17d7124194
       </nav>
 
       <section className="hero">
@@ -306,6 +444,7 @@ const Home = () => {
         <div className="service-grid">
           <div className="service-item">
             <img src="/images1/dieuthuoc.png" alt="Dược phẩm" />
+<<<<<<< HEAD
             <h3>Dược phẩm hỗ trợ</h3>
             <p>Liệu pháp thay thế nicotine được công nhận khoa học.</p>
             <Link to="/duocpham" style={{ color: '#b71c1c' }}>Xem thêm</Link>
@@ -316,12 +455,35 @@ const Home = () => {
             <p>Các bài trắc nghiệm, tài liệu và ứng dụng đồng hành.</p>
             {/* Gọi trực tiếp hàm checkLogin */}
             <a href="#" onClick={checkLogin} style={{ color: '#b71c1c' }}>Khám phá</a>
+=======
+            <h3>DƯỢC PHẨM HỖ TRỢ</h3>
+            <p>Liệu pháp thay thế nicotine được công nhận khoa học.</p>
+            <a href="duocpham.html" style={{ color: "#b71c1c" }}>
+              Xem thêm
+            </a>
+          </div>
+          <div className="service-item">
+            <img src="/images1/battay.png" alt="Công cụ" />
+            <h3>CÔNG CỤ HỖ TRỢ</h3>
+            <p>Các bài trắc nghiệm, tài liệu và ứng dụng đồng hành.</p>
+            <a
+              href="#!"
+              onClick={checkLogin}
+              style={{ color: "#b71c1c", cursor: "pointer" }}
+            >
+              Khám phá
+            </a>
+>>>>>>> 2a4b59d79ee19f84f4d9116fef457c17d7124194
           </div>
         </div>
       </section>
 
       <section className="section">
+<<<<<<< HEAD
         <h2>Gương cai thuốc thành công</h2>
+=======
+        <h2>Tấm gương cai thuốc thành công</h2>
+>>>>>>> 2a4b59d79ee19f84f4d9116fef457c17d7124194
         <div className="carousel-wrapper">
           <div className="carousel">
             <div className="carousel-item">
@@ -340,10 +502,38 @@ const Home = () => {
                 <p>“Tôi đã cai thuốc nhờ sự hỗ trợ từ chương trình.”</p>
               </div>
             </div>
+<<<<<<< HEAD
+=======
+            <div className="carousel-item">
+              <img src="/images1/gương1.jpg" alt="Ông Nguyễn Văn A" />
+              <div>
+                <h3>Ông Nguyễn Văn A</h3>
+                <p>Bỏ thuốc 6 tháng, sức khỏe cải thiện rõ rệt.</p>
+                <p>“Tôi đã cai thuốc nhờ sự hỗ trợ từ chương trình.”</p>
+              </div>
+            </div>
+            <div className="carousel-item">
+              <img src="/images1/gương1.jpg" alt="Ông Nguyễn Văn A" />
+              <div>
+                <h3>Ông Nguyễn Văn A</h3>
+                <p>Bỏ thuốc 6 tháng, sức khỏe cải thiện rõ rệt.</p>
+                <p>“Tôi đã cai thuốc nhờ sự hỗ trợ từ chương trình.”</p>
+              </div>
+            </div>
+            <div className="carousel-item">
+              <img src="/images1/gương1.jpg" alt="Ông Nguyễn Văn A" />
+              <div>
+                <h3>Ông Nguyễn Văn A</h3>
+                <p>Bỏ thuốc 6 tháng, sức khỏe cải thiện rõ rệt.</p>
+                <p>“Tôi đã cai thuốc nhờ sự hỗ trợ từ chương trình.”</p>
+              </div>
+            </div>
+>>>>>>> 2a4b59d79ee19f84f4d9116fef457c17d7124194
           </div>
         </div>
       </section>
 
+<<<<<<< HEAD
       <section className="section" style={{ backgroundColor: '#f1f8f6', borderTop: '2px solid #004d40' }}>
         <h2>Lời nhắn gửi từ chương trình</h2>
         <div style={{ maxWidth: '800px', margin: 'auto', textAlign: 'center', fontSize: '18px', color: '#2e7d32' }}>
@@ -365,19 +555,49 @@ const Home = () => {
       <div id="menuIconWrapper">
         <div className="circle-avatar">
           <img id="menuIcon" src="/images1/cainghien.jpeg" alt="Menu người dùng" />
+=======
+      <footer
+        style={{ background: "#004d40", color: "#fff", padding: 20, textAlign: "center" }}
+      >
+        <p>© 2025 CaiThuocTot.vn | Liên hệ: info@caithuoctot.vn</p>
+      </footer>
+
+      {/* Avatar + Sidebar */}
+      <div id="menuIconWrapper">
+        <div className="circle-avatar">
+          <img
+            id="menuIcon"
+            src="/images1/cainghien.jpeg"
+            alt="Menu người dùng"
+          />
+>>>>>>> 2a4b59d79ee19f84f4d9116fef457c17d7124194
         </div>
       </div>
 
       <div id="overlay"></div>
+<<<<<<< HEAD
 
       <div id="sidebar">
         {/* Gọi trực tiếp hàm goTo và dangXuat */}
         <div className="sidebar-item" onClick={() => goTo('/canhan')}>👤 Trang cá nhân</div>
         <div className="sidebar-item" onClick={() => goTo('/member')}>💬 Dịch vụ khách hàng</div>
+=======
+      <div id="sidebar">
+        <div className="sidebar-item" onClick={() => goTo("profile.html")}>
+          👤 Trang cá nhân
+        </div>
+        <div className="sidebar-item" onClick={() => goTo("member.html")}>
+          💬 Dịch vụ khách hàng
+        </div>
+>>>>>>> 2a4b59d79ee19f84f4d9116fef457c17d7124194
         <div className="sidebar-item" onClick={dangXuat}>🚪 Đăng xuất</div>
       </div>
     </>
   );
 };
 
+<<<<<<< HEAD
 export default Home;
+=======
+export default Home;
+>>>>>>> 2a4b59d79ee19f84f4d9116fef457c17d7124194
