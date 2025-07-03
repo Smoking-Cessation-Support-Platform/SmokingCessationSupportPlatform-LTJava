@@ -1,0 +1,19 @@
+@Entity
+@Table(name = "users")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
+public class User extends BaseEntity {
+    
+    @Column(unique = true)
+    private String username;
+    
+    @Column(unique = true)
+    private String email;
+    
+    private String password;
+    
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<SmokingData> smokingData;
+}

@@ -1,42 +1,8 @@
-<<<<<<< HEAD
-=======
-vakypro
-vakypro
-Online
-
-vakypro — 11:29 CH
-Chú ong chăm chỉ — 11:32 CH
-Forwarded
-lienhe.jsx
 import React, { useEffect } from "react";
 import { Link } from 'react-router-dom'; 
 import { useNavigate } from "react-router-dom"; 
 
-const LienHe = () => {
-  const navigate = useNavigate(); 
-Expand
-message.txt
-9 KB
-Forwarded
-blog.jsx
-import React, { useEffect } from "react";
-import { Link } from 'react-router-dom'; 
-import { useNavigate } from "react-router-dom"; 
-const CauChuyenThanhCong = () => {
-  const navigate = useNavigate(); 
-Expand
-message.txt
-11 KB
-﻿
-Chú ong chăm chỉ
-minhmoi.
- 
->>>>>>> 2a4b59d79ee19f84f4d9116fef457c17d7124194
-import React, { useEffect } from "react";
-import { Link } from 'react-router-dom'; 
-import { useNavigate } from "react-router-dom"; 
-
-const LienHe = () => {
+const DuocPham = () => {
   const navigate = useNavigate(); 
 
   useEffect(() => {
@@ -69,45 +35,16 @@ const LienHe = () => {
     if (menuIcon) menuIcon.addEventListener('click', openSidebar);
     if (overlay) overlay.addEventListener('click', closeSidebar);
 
-    const currentPath = window.location.pathname.split('/').pop();
-    const navLinks = document.querySelectorAll('nav a');
-
-    navLinks.forEach(link => {
-      if (link.getAttribute('href') && currentPath.includes(link.getAttribute('href').replace('.html', ''))) {
-        link.classList.add('nav-active');
-      }
-    });
-
     return () => {
       if (menuIcon) menuIcon.removeEventListener('click', openSidebar);
       if (overlay) overlay.removeEventListener('click', closeSidebar);
     };
-  }, []);
-
-  const checkLogin = () => {
-    const isMember = localStorage.getItem('isMember') === 'true';
-    if (isMember) {
-      navigate("/member");
-    } else {
-      alert("Bạn cần đăng nhập để sử dụng tính năng này.");
-      navigate("/login");
-    }
-  };
-
-  const checkLoginDuocPham = () => {
-    const isMember = localStorage.getItem('isMember') === 'true';
-    if (isMember) {
-      navigate("/duocpham");
-    } else {
-      alert("Bạn cần đăng nhập để xem thông tin sản phẩm.");
-      navigate("/login");
-    }
-  };
+  }, []); 
 
   const dangXuat = () => {
     localStorage.removeItem('isMember');
     localStorage.removeItem('username');
-    navigate("/login"); 
+    navigate("/login");
   };
 
   const goTo = (page) => {
@@ -126,11 +63,10 @@ const LienHe = () => {
         * {
           box-sizing: border-box;
         }
-        html, body {
-          height: 100%;
+        body {
           margin: 0;
           font-family: 'Roboto', sans-serif;
-          background: #fff;
+          background: #f4f4f4;
           color: #333;
           line-height: 1.6;
           display: flex;
@@ -141,11 +77,11 @@ const LienHe = () => {
           text-decoration: none;
           color: inherit;
         }
+
         header {
           background: #004d40;
           color: white;
           padding: 12px 20px;
-          flex-shrink: 0;
         }
         .topbar {
           display: flex;
@@ -161,13 +97,17 @@ const LienHe = () => {
         .topbar-left img {
           height: 45px;
         }
+
+        .auth-links a {
+          color: white;
+        }
+
         nav {
           background: #b71c1c;
           display: flex;
           flex-wrap: wrap;
           justify-content: center;
           padding: 12px 0;
-          flex-shrink: 0;
         }
         nav a {
           color: #fff;
@@ -181,21 +121,22 @@ const LienHe = () => {
           border-radius: 4px;
         }
 
-        main {
-          flex-grow: 1;
-          max-width: 900px;
-          margin: 30px auto;
-          padding: 0 20px 40px;
-          width: 100%;
+        .container {
+          max-width: 800px;
+          margin: 20px auto;
+          padding: 20px;
+          background: white;
+          border-radius: 8px;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+          flex: 1;
         }
-        h1 {
+        h2 {
           color: #004d40;
           text-align: center;
-          margin-bottom: 20px;
         }
-        p {
-          margin-bottom: 15px;
-          font-size: 16px;
+        h3 {
+          color: #004d40;
+          margin-top: 20px;
         }
         footer {
           background: #004d40;
@@ -204,16 +145,13 @@ const LienHe = () => {
           text-align: center;
           flex-shrink: 0;
         }
-        .contact-info {
-          margin-top: 20px;
-        }
-        .contact-info p {
-          margin: 5px 0;
+        .product-image {
+          width: 100%;
+          height: auto;
+          border-radius: 8px;
+          margin: 10px 0;
         }
 
-        .auth-links {
-          color: white;
-        }
         #menuIconWrapper {
           position: fixed;
           top: 16px;
@@ -281,7 +219,7 @@ const LienHe = () => {
         <div className="topbar">
           <div className="topbar-left">
             <img src="/images1/logo.jpg" alt="Logo CaiThuocTot.vn" />
-            <div><strong>CaiThuocTot.vn</strong> - Hành trình vì sức khỏe</div>
+            <div><strong>CaiThuocTot.vn</strong> - Cổng thông tin cai thuốc lá</div>
           </div>
           <div className="auth-links">
             <Link to="/register" style={{ color: "white" }}>Đăng ký</Link> |
@@ -298,23 +236,47 @@ const LienHe = () => {
 <<<<<<< HEAD
         <a href="huanluyenvien.html">Dành cho huấn luyện viên</a>
 =======
-        <a href="huanluyenvien_home">Dành cho huấn luyện viên</a>
->>>>>>> 2a4b59d79ee19f84f4d9116fef457c17d7124194
+        <Link to="huanluyenvien_home">Dành cho huấn luyện viên</Link>
+>>>>>>> bec15bc28804ae31dee31f0f48090beb37ed57ba
         <Link to="/blog">Câu chuyện thành công</Link>
-        <Link to="/lienhe" className="nav-active">Liên hệ</Link>
+        <Link to="/lienhe">Liên hệ</Link>
       </nav>
 
-      <main>
-        <h1>Liên Hệ Với Chúng Tôi</h1>
-        <p>Nếu bạn có bất kỳ câu hỏi nào hoặc cần thêm thông tin, vui lòng liên hệ với chúng tôi qua các phương thức dưới đây:</p>
+      <div className="container">
+        <h2>Dược Phẩm Hỗ Trợ Cai Nghiện Thuốc Lá</h2>
+        <p>
+          Chào mừng bạn đến với trang dược phẩm hỗ trợ cai nghiện thuốc lá của <strong>CaiThuocTot.vn</strong>. Chúng tôi cung cấp các sản phẩm chất lượng giúp bạn từ bỏ thuốc lá một cách hiệu quả và an toàn.
+        </p>
 
-        <div className="contact-info">
-          <h2>Thông Tin Liên Hệ</h2>
-          <p>Email: <a href="mailto:nhubdq3680@ut.edu.vn">nhubdq3680@ut.edu.vn</a></p>
-          <p>Điện thoại: 0364155024</p>
-          <p>Địa chỉ: 70 Đ. Tô Ký, Tân Chánh Hiệp, Quận 12, Hồ Chí Minh</p>
-        </div>
-      </main>
+        <h3>Sản phẩm của chúng tôi</h3>
+        <ul>
+          <li>
+            <strong>Miếng dán nicotine:</strong> Giúp giảm cơn thèm thuốc bằng cách cung cấp một lượng nicotine nhỏ vào cơ thể. Có nhiều loại với các mức độ nicotine khác nhau.
+            <img src="/images1/miengdannicotin.jpg" alt="Miếng dán nicotine" className="product-image" />
+          </li>
+          <li>
+            <strong>Thuốc xịt nicotine:</strong> Cung cấp nicotine nhanh chóng qua niêm mạc miệng, giúp giảm cơn thèm thuốc ngay lập tức. Dễ dàng mang theo và sử dụng.
+            <img src="/images1/thuocxit.jpg" alt="Thuốc xịt nicotine" className="product-image" />
+          </li>
+          <li>
+            <strong>Viên ngậm nicotine:</strong> Giúp kiểm soát cơn thèm thuốc và giảm cảm giác thèm thuốc trong thời gian dài. Thích hợp cho những người không thích miếng dán.
+            <img src="/images1/ngamnicotin.jpg" alt="Viên ngậm nicotine" className="product-image" />
+          </li>
+        </ul>
+
+        <h3>Lợi ích của việc cai thuốc lá</h3>
+        <ul>
+          <li>Cải thiện chức năng phổi và hô hấp.</li>
+          <li>Giảm nguy cơ mắc các bệnh tim mạch và ung thư.</li>
+          <li>Tăng cường sức đề kháng và khả năng phục hồi của cơ thể.</li>
+          <li>Tiết kiệm chi phí cho thuốc lá và các chi phí y tế liên quan.</li>
+        </ul>
+
+        <h3>Hướng dẫn sử dụng</h3>
+        <p>
+          Để đạt hiệu quả tốt nhất, hãy tham khảo ý kiến bác sĩ hoặc chuyên gia y tế trước khi sử dụng bất kỳ sản phẩm nào. Hãy kiên trì và nhớ rằng việc cai thuốc là một quá trình cần thời gian và sự quyết tâm.
+        </p>
+      </div>
 
       <footer>
         <p>© 2025 CaiThuocTot.vn - Bản quyền thuộc về nhóm phát triển</p>
@@ -329,12 +291,21 @@ const LienHe = () => {
 
       <div id="overlay"></div>
       <div id="sidebar">
+<<<<<<< HEAD
         <div className="sidebar-item" onClick={() => goTo('canhan.html')}>👤 Trang cá nhân</div>
         <div className="sidebar-item" onClick={() => goTo('member.html')}>💬 Dịch vụ khách hàng</div>
+=======
+        <div className="sidebar-item" onClick={() => goTo('/canhan')}>👤 Trang cá nhân</div>
+        <div className="sidebar-item" onClick={() => goTo('/member')}>💬 Dịch vụ khách hàng</div>
+>>>>>>> bec15bc28804ae31dee31f0f48090beb37ed57ba
         <div className="sidebar-item" onClick={dangXuat}>🚪 Đăng xuất</div>
       </div>
     </>
   );
 };
 
-export default LienHe;
+<<<<<<< HEAD
+export default DuocPham;
+=======
+export default DuocPham;
+>>>>>>> bec15bc28804ae31dee31f0f48090beb37ed57ba

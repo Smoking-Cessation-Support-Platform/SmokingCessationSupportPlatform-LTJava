@@ -2,48 +2,30 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const Payment = () => {
+const PaymentCoach = () => {
     const navigate = useNavigate();
-    const [userData, setUserData] = useState(null);
+    const [registrationData, setRegistrationData] = useState(null);
     const [countdown, setCountdown] = useState(15 * 60); // 15 phút
     const [error, setError] = useState('');
 
     useEffect(() => {
-        const userId = localStorage.getItem('pendingUserId');
-        const email = localStorage.getItem('pendingUserEmail');
-        
-        console.log('Payment page loaded with userId:', userId, 'email:', email);
-        
-        if (!userId || !email) {
-            console.error('Missing pending user data. Redirecting to register page.');
-            alert('Thông tin đăng ký không đầy đủ. Vui lòng đăng ký lại.');
-            navigate('/register');
+        const coachId = localStorage.getItem('pendingCoachId');
+        if (!coachId) {
+            navigate('/register-coach');
             return;
         }
 
-        const fetchUserData = async () => {
+        const fetchCoachData = async () => {
             try {
-                console.log('Fetching user data for ID:', userId);
-                const response = await axios.get(`http://localhost:8080/api/users/${userId}`, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    }
-                });
-                console.log('User data received:', response.data);
-                setUserData(response.data);
+                const response = await axios.get(`http://localhost:8080/api/coaches/${coachId}`);
+                setRegistrationData(response.data);
             } catch (error) {
-                console.error('Error fetching user data:', error);
-                if (error.response) {
-                    console.error('Error response:', error.response.data);
-                    console.error('Status:', error.response.status);
-                }
-                alert('Không thể tải thông tin người dùng. Vui lòng thử lại.');
-                navigate('/register');
+                console.error('Error fetching coach data:', error);
+                navigate('/register-coach');
             }
         };
 
-        fetchUserData();
+        fetchCoachData();
 
         // Bắt đầu đếm ngược
         const timer = setInterval(() => {
@@ -51,7 +33,7 @@ const Payment = () => {
                 if (prev <= 1) {
                     clearInterval(timer);
                     alert('Hết thời gian thanh toán! Vui lòng thực hiện lại.');
-                    navigate('/register');
+                    navigate('/register-coach');
                     return 0;
                 }
                 return prev - 1;
@@ -77,122 +59,55 @@ const Payment = () => {
     };
 
     const confirmPayment = async () => {
-        if (!userData || !userData.id) {
-            const errorMsg = !userData ? 'Không tìm thấy thông tin đăng ký' : 'Thiếu ID người dùng';
-            console.error('Payment error:', errorMsg, userData);
-            setError(`${errorMsg}. Vui lòng đăng ký lại.`);
-            navigate('/register');
+        if (!registrationData) {
+            setError("Không tìm thấy thông tin đăng ký. Vui lòng đăng ký lại.");
+            navigate('/register-coach');
             return;
         }
 
         try {
-            console.log('Creating payment for user ID:', userData.id);
+            // First create the payment
             const paymentResponse = await axios.post(
-                `http://localhost:8080/api/payments/user/${userData.id}`,
+                `http://localhost:8080/api/payments/coach/${registrationData.id}`,
                 {
-                    paymentMethod: 'banking',
-                    amount: 699000, // 699,000 VND
-                    currency: 'VND',
-                    description: 'Thanh toán gói thành viên'
+                    paymentMethod: 'banking'
                 },
                 {
+                    withCredentials: true,
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json'
-                    },
-                    timeout: 10000 // 10 seconds timeout
+                    }
                 }
             );
 
-            console.log('Payment creation response:', paymentResponse.data);
-
-            if (paymentResponse.status === 200 && paymentResponse.data && paymentResponse.data.orderCode) {
-                console.log('Confirming payment with order code:', paymentResponse.data.orderCode);
-                
+            if (paymentResponse.status === 200 && paymentResponse.data) {
                 // Then confirm the payment using the order code
                 const confirmResponse = await axios.post(
                     `http://localhost:8080/api/payments/confirm/${paymentResponse.data.orderCode}`,
                     {},
                     {
+                        withCredentials: true,
                         headers: {
                             'Content-Type': 'application/json',
                             'Accept': 'application/json'
-                        },
-                        timeout: 10000 // 10 seconds timeout
+                        }
                     }
                 );
 
-                console.log('Payment confirmation response:', confirmResponse.data);
-
                 if (confirmResponse.status === 200) {
-                    // Get saved credentials
-                    const email = localStorage.getItem('pendingUserEmail');
-                    const password = localStorage.getItem('pendingUserPassword');
-                    
-                    if (!email || !password) {
-                        throw new Error('Thiếu thông tin đăng nhập. Vui lòng đăng nhập thủ công.');
-                    }
-                    
-                    console.log('Attempting auto-login for:', email);
-                    
-                    // Auto login after successful payment
-                    try {
-                        const loginResponse = await axios.post(
-                            'http://localhost:8080/api/users/login',
-                            { email, password },
-                            {
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'Accept': 'application/json'
-                                },
-                                timeout: 10000 // 10 seconds timeout
-                            }
-                        );
-                        
-                        console.log('Login response:', loginResponse.data);
-                        
-                        if (loginResponse.data && loginResponse.data.token) {
-                            // Clean up only after successful login
-                            localStorage.removeItem('pendingUserId');
-                            localStorage.removeItem('pendingUserEmail');
-                            localStorage.removeItem('pendingUserPassword');
-                            
-                            // Save login info
-                            localStorage.setItem('token', loginResponse.data.token);
-                            localStorage.setItem('userId', loginResponse.data.id || userData.id);
-                            localStorage.setItem('isMember', 'true');
-                            
-                            console.log('Login successful, redirecting to home page');
-                            alert('Thanh toán và đăng nhập thành công!');
-                            navigate('/');
-                        } else {
-                            throw new Error('Thông tin đăng nhập không hợp lệ');
-                        }
-                    } catch (loginError) {
-                        console.error('Auto login error:', loginError);
-                        // Don't clear pending data here to allow manual login
-                        alert('Thanh toán thành công! Vui lòng đăng nhập bằng tài khoản của bạn.');
-                        navigate('/login');
-                    }
-                } else {
-                    setError('Xác nhận thanh toán thất bại. Vui lòng thử lại.');
+                    localStorage.removeItem('pendingCoachId');
+                    alert('Thanh toán thành công! Vui lòng đăng nhập để bắt đầu.');
+                    navigate('/login-coach');
                 }
-            } else {
-                setError('Tạo đơn thanh toán thất bại. Vui lòng thử lại.');
             }
         } catch (error) {
-            console.error('Payment error:', error);
-            if (error.response) {
-                setError(error.response.data || 'Có lỗi xảy ra trong quá trình thanh toán. Vui lòng thử lại.');
-            } else if (error.request) {
-                setError('Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.');
-            } else {
-                setError('Có lỗi xảy ra trong quá trình thanh toán. Vui lòng thử lại.');
-            }
+            console.error('Error confirming payment:', error);
+            setError(error.response?.data || 'Có lỗi xảy ra khi xác nhận thanh toán. Vui lòng thử lại.');
         }
     };
 
-    if (!userData) {
+    if (!registrationData) {
         return <div style={{ textAlign: 'center', marginTop: '50px' }}>Đang tải...</div>;
     }
 
@@ -295,61 +210,22 @@ const Payment = () => {
                     text-align: center;
                     margin-top: 10px;
                 }
-                .benefits {
-                    background: #e8f5e9;
-                    padding: 15px;
-                    border-radius: 8px;
-                    margin-top: 20px;
-                }
-                .benefits h3 {
-                    color: #2e7d32;
-                    margin-bottom: 10px;
-                }
-                .benefits ul {
-                    list-style-type: none;
-                    padding: 0;
-                    margin: 0;
-                }
-                .benefits li {
-                    margin: 8px 0;
-                    color: #1b5e20;
-                    padding-left: 20px;
-                    position: relative;
-                }
-                .benefits li:before {
-                    content: "✓";
-                    position: absolute;
-                    left: 0;
-                    color: #4caf50;
-                }
             `}</style>
 
             <div className="left">
                 <h1>OKPay</h1>
                 <p style={{ textAlign: 'center', color: '#1976d2' }}>Pay With Ease, Like Saying Ok</p>
                 <img src="/images1/qr.jpg" alt="QR Code thanh toán" />
-                <div className="amount">699.000 VND</div>
+                <div className="amount">500.000 VND</div>
 
                 <div className="notes">
                     <h3>Xin lưu ý :</h3>
                     <ol>
                         <li>Kiểm tra chính xác tài khoản và họ tên người nhận tiền.</li>
                         <li>Nhập nội dung chuyển khoản chính xác.</li>
-                        <li><strong>Chuyển chính xác số tiền 699.000 VND</strong>.</li>
+                        <li><strong>Chuyển chính xác số tiền 500.000 VND</strong>.</li>
                         <li>Không lưu thông tin tài khoản ngân hàng để tránh rủi ro.</li>
                     </ol>
-                </div>
-
-                <div className="benefits">
-                    <h3>Quyền lợi của bạn:</h3>
-                    <ul>
-                        <li>Được tư vấn 1-1 với huấn luyện viên</li>
-                        <li>Truy cập đầy đủ tính năng ứng dụng</li>
-                        <li>Theo dõi tiến trình cai thuốc</li>
-                        <li>Nhận thông báo và lời khuyên</li>
-                        <li>Tham gia cộng đồng hỗ trợ</li>
-                        <li>Bảo hành hoàn tiền trong 30 ngày</li>
-                    </ul>
                 </div>
             </div>
 
@@ -383,14 +259,14 @@ const Payment = () => {
 
                 <div className="info-item">
                     <div className="info-label">Số tiền:</div>
-                    <div className="info-value">699.000 VND</div>
+                    <div className="info-value">500.000 VND</div>
                 </div>
 
                 <div className="info-item">
                     <div className="info-label">Nội dung chuyển khoản:</div>
                     <div className="info-value">
-                        USER_{userData.username}
-                        <span className="info-copy" onClick={() => copyText(`USER_${userData.username}`)}>Copy</span>
+                        HLV_{registrationData.username}
+                        <span className="info-copy" onClick={() => copyText(`HLV_${registrationData.username}`)}>Copy</span>
                     </div>
                 </div>
 
@@ -404,4 +280,4 @@ const Payment = () => {
     );
 };
 
-export default Payment;
+export default PaymentCoach;
