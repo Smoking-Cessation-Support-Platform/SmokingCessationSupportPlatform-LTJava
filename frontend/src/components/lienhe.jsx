@@ -1,7 +1,44 @@
-import React, { useEffect } from "react";
-import { Link } from 'react-router-dom';
+<<<<<<< HEAD
+=======
+vakypro
+vakypro
+Online
 
-const HuongDanCaiThuoc = () => {
+vakypro — 11:29 CH
+Chú ong chăm chỉ — 11:32 CH
+Forwarded
+lienhe.jsx
+import React, { useEffect } from "react";
+import { Link } from 'react-router-dom'; 
+import { useNavigate } from "react-router-dom"; 
+
+const LienHe = () => {
+  const navigate = useNavigate(); 
+Expand
+message.txt
+9 KB
+Forwarded
+blog.jsx
+import React, { useEffect } from "react";
+import { Link } from 'react-router-dom'; 
+import { useNavigate } from "react-router-dom"; 
+const CauChuyenThanhCong = () => {
+  const navigate = useNavigate(); 
+Expand
+message.txt
+11 KB
+﻿
+Chú ong chăm chỉ
+minhmoi.
+ 
+>>>>>>> 2a4b59d79ee19f84f4d9116fef457c17d7124194
+import React, { useEffect } from "react";
+import { Link } from 'react-router-dom'; 
+import { useNavigate } from "react-router-dom"; 
+
+const LienHe = () => {
+  const navigate = useNavigate(); 
+
   useEffect(() => {
     const isMember = localStorage.getItem('isMember') === 'true';
     const authLinks = document.querySelector('.auth-links');
@@ -36,7 +73,7 @@ const HuongDanCaiThuoc = () => {
     const navLinks = document.querySelectorAll('nav a');
 
     navLinks.forEach(link => {
-      if (link.getAttribute('href') === currentPath) {
+      if (link.getAttribute('href') && currentPath.includes(link.getAttribute('href').replace('.html', ''))) {
         link.classList.add('nav-active');
       }
     });
@@ -45,36 +82,42 @@ const HuongDanCaiThuoc = () => {
       if (menuIcon) menuIcon.removeEventListener('click', openSidebar);
       if (overlay) overlay.removeEventListener('click', closeSidebar);
     };
-  }, []); 
+  }, []);
 
   const checkLogin = () => {
     const isMember = localStorage.getItem('isMember') === 'true';
     if (isMember) {
-      window.location.href = "/member"; 
+      navigate("/member");
     } else {
       alert("Bạn cần đăng nhập để sử dụng tính năng này.");
-      window.location.href = "/login"; 
+      navigate("/login");
     }
   };
 
   const checkLoginDuocPham = () => {
     const isMember = localStorage.getItem('isMember') === 'true';
     if (isMember) {
-      window.location.href = "/duocpham"; 
+      navigate("/duocpham");
     } else {
       alert("Bạn cần đăng nhập để xem thông tin sản phẩm.");
-      window.location.href = "/login"; 
+      navigate("/login");
     }
   };
 
   const dangXuat = () => {
     localStorage.removeItem('isMember');
     localStorage.removeItem('username');
-    window.location.href = "/login"; 
+    navigate("/login"); 
   };
 
   const goTo = (page) => {
-    window.location.href = page; 
+    const reactPageMap = {
+      'canhan.html': '/canhan',
+      'member.html': '/member',
+      'login1.html': '/login'
+    };
+    const targetPath = reactPageMap[page] || `/${page.replace('.html', '')}`;
+    navigate(targetPath);
   };
 
   return (
@@ -118,7 +161,6 @@ const HuongDanCaiThuoc = () => {
         .topbar-left img {
           height: 45px;
         }
-
         nav {
           background: #b71c1c;
           display: flex;
@@ -138,10 +180,6 @@ const HuongDanCaiThuoc = () => {
           background: rgba(255,255,255,0.2);
           border-radius: 4px;
         }
-        .nav-active {
-            background: rgba(255,255,255,0.2);
-            border-radius: 4px;
-        }
 
         main {
           flex-grow: 1;
@@ -155,18 +193,9 @@ const HuongDanCaiThuoc = () => {
           text-align: center;
           margin-bottom: 20px;
         }
-        h2 {
-          color: #b71c1c;
-          margin-top: 30px;
-        }
         p {
           margin-bottom: 15px;
           font-size: 16px;
-        }
-        ul {
-          list-style-type: disc;
-          margin-left: 20px;
-          margin-bottom: 15px;
         }
         footer {
           background: #004d40;
@@ -174,6 +203,12 @@ const HuongDanCaiThuoc = () => {
           padding: 20px;
           text-align: center;
           flex-shrink: 0;
+        }
+        .contact-info {
+          margin-top: 20px;
+        }
+        .contact-info p {
+          margin: 5px 0;
         }
 
         .auth-links {
@@ -266,62 +301,19 @@ const HuongDanCaiThuoc = () => {
         <a href="huanluyenvien_home">Dành cho huấn luyện viên</a>
 >>>>>>> 2a4b59d79ee19f84f4d9116fef457c17d7124194
         <Link to="/blog">Câu chuyện thành công</Link>
-        <Link to="/lienhe">Liên hệ</Link>
+        <Link to="/lienhe" className="nav-active">Liên hệ</Link>
       </nav>
 
       <main>
-        <h1>Hướng Dẫn Cai Nghiện Thuốc Lá</h1>
+        <h1>Liên Hệ Với Chúng Tôi</h1>
+        <p>Nếu bạn có bất kỳ câu hỏi nào hoặc cần thêm thông tin, vui lòng liên hệ với chúng tôi qua các phương thức dưới đây:</p>
 
-        <p>Cai thuốc lá là một quá trình khó khăn nhưng có thể thành công nếu bạn có kế hoạch và sự kiên trì. Dưới đây là các bước và chiến lược hữu ích để hỗ trợ bạn trong hành trình bỏ thuốc.</p>
-
-        <h2>1. Chuẩn Bị Tâm Lý</h2>
-        <p>Thấu hiểu lý do bạn muốn bỏ thuốc và xác định động lực sẽ giúp bạn duy trì quyết tâm.</p>
-        <ul>
-          <li>Xác định lợi ích về sức khỏe và tài chính.</li>
-          <li>Xác định các tình huống dễ khiến bạn thèm thuốc và lên kế hoạch đối phó.</li>
-          <li>Chia sẻ kế hoạch với gia đình và bạn bè để nhận được sự hỗ trợ.</li>
-        </ul>
-
-        <h2>2. Lựa Chọn Ngày Bỏ Thuốc</h2>
-        <p>Chọn một ngày cụ thể để bắt đầu bỏ thuốc, tốt nhất là trong vòng 2 tuần tới. Thời gian chuẩn bị sẽ giúp bạn sắp xếp và xử lý các yếu tố gây cám dỗ.</p>
-
-        <h2>3. Giảm Liều Dần hoặc Ngưng Đột Ngột</h2>
-        <p>Bạn có thể lựa chọn:</p>
-        <ul>
-          <li>Giảm số lượng thuốc hút mỗi ngày dần dần trước ngày bỏ thuốc.</li>
-          <li>Ngưng hút thuốc hoàn toàn đột ngột vào ngày đã chọn.</li>
-        </ul>
-
-        <h2>4. Hỗ Trợ Y Tế và Sử Dụng Dược Phẩm</h2>
-        <p>Tìm đến các dịch vụ y tế hoặc sử dụng liệu pháp thay thế nicotine (NRT) để giảm các triệu chứng cai nghiện.</p>
-        <ul>
-          <li>Miếng dán, kẹo cao su nicotine.</li>
-          <li>Thuốc kê toa theo hướng dẫn của bác sĩ.</li>
-          <li>Tư vấn và hỗ trợ tâm lý từ chuyên gia.</li>
-        </ul>
-
-        <h2>5. Quản Lý Cơn Thèm Thuốc</h2>
-        <p>Học cách kiểm soát khi những cơn thèm xuất hiện:</p>
-        <ul>
-          <li>Uống nước hoặc nhai kẹo cao su không đường.</li>
-          <li>Thực hiện các bài tập thở sâu.</li>
-          <li>Thay đổi thói quen hoặc tránh các tình huống kích thích muốn hút thuốc.</li>
-        </ul>
-
-        <h2>6. Duy Trì và Giữ Quyết Tâm</h2>
-        <ul>
-          <li>Tập thể dục và duy trì chế độ ăn uống lành mạnh.</li>
-          <li>Tham gia các nhóm hỗ trợ hoặc cộng đồng cai thuốc.</li>
-          <li>Phần thưởng bản thân khi đạt được mục tiêu cai thuốc ngắn hạn và dài hạn.</li>
-        </ul>
-
-        <h2>7. Xử Lý Tái Hút Thuốc</h2>
-        <p>Nếu bạn tái hút thuốc, đừng nản lòng. Hãy xem lại nguyên nhân và bắt đầu lại với kế hoạch mới.</p>
-
-        <h2>Liên hệ hỗ trợ</h2>
-        <p>Nếu cần tư vấn hay hỗ trợ thêm, bạn có thể liên hệ với chúng tôi:</p>
-        <p>Email: <a href="mailto:info@caithuoctot.vn">info@caithuoctot.vn</a></p>
-        <p>Điện thoại: 1900 1234 (ví dụ)</p>
+        <div className="contact-info">
+          <h2>Thông Tin Liên Hệ</h2>
+          <p>Email: <a href="mailto:nhubdq3680@ut.edu.vn">nhubdq3680@ut.edu.vn</a></p>
+          <p>Điện thoại: 0364155024</p>
+          <p>Địa chỉ: 70 Đ. Tô Ký, Tân Chánh Hiệp, Quận 12, Hồ Chí Minh</p>
+        </div>
       </main>
 
       <footer>
@@ -337,17 +329,12 @@ const HuongDanCaiThuoc = () => {
 
       <div id="overlay"></div>
       <div id="sidebar">
-<<<<<<< HEAD
         <div className="sidebar-item" onClick={() => goTo('canhan.html')}>👤 Trang cá nhân</div>
         <div className="sidebar-item" onClick={() => goTo('member.html')}>💬 Dịch vụ khách hàng</div>
-=======
-        <div className="sidebar-item" onClick={() => goTo('/canhan')}>👤 Trang cá nhân</div>
-        <div className="sidebar-item" onClick={() => goTo('/member')}>💬 Dịch vụ khách hàng</div>
->>>>>>> 2a4b59d79ee19f84f4d9116fef457c17d7124194
         <div className="sidebar-item" onClick={dangXuat}>🚪 Đăng xuất</div>
       </div>
     </>
   );
 };
 
-export default HuongDanCaiThuoc;
+export default LienHe;

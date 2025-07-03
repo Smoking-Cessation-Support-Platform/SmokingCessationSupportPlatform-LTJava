@@ -1,7 +1,9 @@
 import React, { useEffect } from "react";
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom'; 
+import { useNavigate } from "react-router-dom"; 
+const CauChuyenThanhCong = () => {
+  const navigate = useNavigate(); 
 
-const HuongDanCaiThuoc = () => {
   useEffect(() => {
     const isMember = localStorage.getItem('isMember') === 'true';
     const authLinks = document.querySelector('.auth-links');
@@ -36,7 +38,7 @@ const HuongDanCaiThuoc = () => {
     const navLinks = document.querySelectorAll('nav a');
 
     navLinks.forEach(link => {
-      if (link.getAttribute('href') === currentPath) {
+      if (link.getAttribute('href') && link.getAttribute('href').includes(currentPath)) {
         link.classList.add('nav-active');
       }
     });
@@ -50,32 +52,65 @@ const HuongDanCaiThuoc = () => {
   const checkLogin = () => {
     const isMember = localStorage.getItem('isMember') === 'true';
     if (isMember) {
-      window.location.href = "/member"; 
+      navigate("/member");
     } else {
       alert("Bạn cần đăng nhập để sử dụng tính năng này.");
-      window.location.href = "/login"; 
+      navigate("/login");
     }
   };
 
   const checkLoginDuocPham = () => {
     const isMember = localStorage.getItem('isMember') === 'true';
     if (isMember) {
-      window.location.href = "/duocpham"; 
+      navigate("/duocpham");
     } else {
       alert("Bạn cần đăng nhập để xem thông tin sản phẩm.");
-      window.location.href = "/login"; 
+      navigate("/login");
     }
   };
 
   const dangXuat = () => {
     localStorage.removeItem('isMember');
     localStorage.removeItem('username');
-    window.location.href = "/login"; 
+    navigate("/login"); 
   };
 
   const goTo = (page) => {
-    window.location.href = page; 
+    const reactPageMap = {
+      'canhan.html': '/canhan',
+      'member.html': '/member',
+      'login1.html': '/login'
+    };
+    const targetPath = reactPageMap[page] || `/${page.replace('.html', '')}`;
+    navigate(targetPath);
   };
+
+  const successStories = [
+    {
+      name: "Ông Nguyễn Văn A",
+      age: 55,
+      duration: "6 tháng",
+      quote: "Tôi đã cai thuốc nhờ sự kiên trì và hỗ trợ từ chương trình. Sức khỏe của tôi đã cải thiện rõ rệt, tôi cảm thấy mình trẻ hơn rất nhiều."
+    },
+    {
+      name: "Bà Trần Thị B",
+      age: 48,
+      duration: "1 năm",
+      quote: "Tin nhắn động viên từ chương trình đã giúp tôi vượt qua cơn thèm thuốc. Tôi cảm thấy tự hào vì đã làm được điều này."
+    },
+    {
+      name: "Anh Lê Văn C",
+      age: 38,
+      method: "liệu pháp NRT",
+      quote: "Tôi khuyên mọi người hãy thử phương pháp này. Nó thực sự hiệu quả và giúp tôi vượt qua cơn thèm thuốc."
+    },
+    {
+      name: "Chị Mai Thị D",
+      age: 42,
+      duration: "3 tháng",
+      quote: "Sức khỏe tôi đã thay đổi tích cực mỗi ngày. Tôi cảm thấy mình có nhiều năng lượng hơn."
+    }
+  ];
 
   return (
     <>
@@ -118,7 +153,6 @@ const HuongDanCaiThuoc = () => {
         .topbar-left img {
           height: 45px;
         }
-
         nav {
           background: #b71c1c;
           display: flex;
@@ -137,10 +171,6 @@ const HuongDanCaiThuoc = () => {
         nav a:hover {
           background: rgba(255,255,255,0.2);
           border-radius: 4px;
-        }
-        .nav-active {
-            background: rgba(255,255,255,0.2);
-            border-radius: 4px;
         }
 
         main {
@@ -163,10 +193,12 @@ const HuongDanCaiThuoc = () => {
           margin-bottom: 15px;
           font-size: 16px;
         }
-        ul {
-          list-style-type: disc;
-          margin-left: 20px;
-          margin-bottom: 15px;
+        .story {
+          margin-bottom: 30px;
+          padding: 15px;
+          border: 1px solid #b71c1c;
+          border-radius: 8px;
+          background: #f9f9f9;
         }
         footer {
           background: #004d40;
@@ -260,68 +292,26 @@ const HuongDanCaiThuoc = () => {
         <Link to="/gioithieu">Về chúng tôi</Link>
         <Link to="/huongdancaithuoc">Hướng dẫn cai thuốc</Link>
         <Link to="/tuvan">Dịch vụ</Link>
-<<<<<<< HEAD
         <a href="huanluyenvien.html">Dành cho huấn luyện viên</a>
-=======
-        <a href="huanluyenvien_home">Dành cho huấn luyện viên</a>
->>>>>>> 2a4b59d79ee19f84f4d9116fef457c17d7124194
-        <Link to="/blog">Câu chuyện thành công</Link>
+        <Link to="/blog" className="nav-active">Câu chuyện thành công</Link>
         <Link to="/lienhe">Liên hệ</Link>
       </nav>
 
       <main>
-        <h1>Hướng Dẫn Cai Nghiện Thuốc Lá</h1>
+        <h1>Câu Chuyện Thành Công</h1>
 
-        <p>Cai thuốc lá là một quá trình khó khăn nhưng có thể thành công nếu bạn có kế hoạch và sự kiên trì. Dưới đây là các bước và chiến lược hữu ích để hỗ trợ bạn trong hành trình bỏ thuốc.</p>
+        {successStories.map((story, index) => (
+          <div className="story" key={index}>
+            <h2>{story.name}</h2>
+            <p>
+              Tuổi {story.age}, đã bỏ thuốc lá được {story.duration}. {story.method ? `Anh/Chị cai thuốc thành công nhờ ${story.method}. ` : ''}
+              {story.name.startsWith("Ông") || story.name.startsWith("Anh") ? "Ông/Anh" : "Bà/Chị"} chia sẻ: “{story.quote}”
+            </p>
+          </div>
+        ))}
 
-        <h2>1. Chuẩn Bị Tâm Lý</h2>
-        <p>Thấu hiểu lý do bạn muốn bỏ thuốc và xác định động lực sẽ giúp bạn duy trì quyết tâm.</p>
-        <ul>
-          <li>Xác định lợi ích về sức khỏe và tài chính.</li>
-          <li>Xác định các tình huống dễ khiến bạn thèm thuốc và lên kế hoạch đối phó.</li>
-          <li>Chia sẻ kế hoạch với gia đình và bạn bè để nhận được sự hỗ trợ.</li>
-        </ul>
-
-        <h2>2. Lựa Chọn Ngày Bỏ Thuốc</h2>
-        <p>Chọn một ngày cụ thể để bắt đầu bỏ thuốc, tốt nhất là trong vòng 2 tuần tới. Thời gian chuẩn bị sẽ giúp bạn sắp xếp và xử lý các yếu tố gây cám dỗ.</p>
-
-        <h2>3. Giảm Liều Dần hoặc Ngưng Đột Ngột</h2>
-        <p>Bạn có thể lựa chọn:</p>
-        <ul>
-          <li>Giảm số lượng thuốc hút mỗi ngày dần dần trước ngày bỏ thuốc.</li>
-          <li>Ngưng hút thuốc hoàn toàn đột ngột vào ngày đã chọn.</li>
-        </ul>
-
-        <h2>4. Hỗ Trợ Y Tế và Sử Dụng Dược Phẩm</h2>
-        <p>Tìm đến các dịch vụ y tế hoặc sử dụng liệu pháp thay thế nicotine (NRT) để giảm các triệu chứng cai nghiện.</p>
-        <ul>
-          <li>Miếng dán, kẹo cao su nicotine.</li>
-          <li>Thuốc kê toa theo hướng dẫn của bác sĩ.</li>
-          <li>Tư vấn và hỗ trợ tâm lý từ chuyên gia.</li>
-        </ul>
-
-        <h2>5. Quản Lý Cơn Thèm Thuốc</h2>
-        <p>Học cách kiểm soát khi những cơn thèm xuất hiện:</p>
-        <ul>
-          <li>Uống nước hoặc nhai kẹo cao su không đường.</li>
-          <li>Thực hiện các bài tập thở sâu.</li>
-          <li>Thay đổi thói quen hoặc tránh các tình huống kích thích muốn hút thuốc.</li>
-        </ul>
-
-        <h2>6. Duy Trì và Giữ Quyết Tâm</h2>
-        <ul>
-          <li>Tập thể dục và duy trì chế độ ăn uống lành mạnh.</li>
-          <li>Tham gia các nhóm hỗ trợ hoặc cộng đồng cai thuốc.</li>
-          <li>Phần thưởng bản thân khi đạt được mục tiêu cai thuốc ngắn hạn và dài hạn.</li>
-        </ul>
-
-        <h2>7. Xử Lý Tái Hút Thuốc</h2>
-        <p>Nếu bạn tái hút thuốc, đừng nản lòng. Hãy xem lại nguyên nhân và bắt đầu lại với kế hoạch mới.</p>
-
-        <h2>Liên hệ hỗ trợ</h2>
-        <p>Nếu cần tư vấn hay hỗ trợ thêm, bạn có thể liên hệ với chúng tôi:</p>
-        <p>Email: <a href="mailto:info@caithuoctot.vn">info@caithuoctot.vn</a></p>
-        <p>Điện thoại: 1900 1234 (ví dụ)</p>
+        <h2>Chia Sẻ Câu Chuyện Của Bạn</h2>
+        <p>Nếu bạn có câu chuyện thành công trong việc cai thuốc lá, hãy chia sẻ với chúng tôi qua email: <a href="mailto:info@caithuoctot.vn">info@caithuoctot.vn</a></p>
       </main>
 
       <footer>
@@ -337,17 +327,12 @@ const HuongDanCaiThuoc = () => {
 
       <div id="overlay"></div>
       <div id="sidebar">
-<<<<<<< HEAD
         <div className="sidebar-item" onClick={() => goTo('canhan.html')}>👤 Trang cá nhân</div>
         <div className="sidebar-item" onClick={() => goTo('member.html')}>💬 Dịch vụ khách hàng</div>
-=======
-        <div className="sidebar-item" onClick={() => goTo('/canhan')}>👤 Trang cá nhân</div>
-        <div className="sidebar-item" onClick={() => goTo('/member')}>💬 Dịch vụ khách hàng</div>
->>>>>>> 2a4b59d79ee19f84f4d9116fef457c17d7124194
         <div className="sidebar-item" onClick={dangXuat}>🚪 Đăng xuất</div>
       </div>
     </>
   );
 };
 
-export default HuongDanCaiThuoc;
+export default CauChuyenThanhCong;

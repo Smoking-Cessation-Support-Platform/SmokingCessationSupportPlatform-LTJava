@@ -1,0 +1,18 @@
+@Entity
+@Table(name = "smoking_data")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
+public class SmokingData extends BaseEntity {
+    
+    private int cigarettesSmoked;
+    
+    private int cravingLevel;
+    
+    private LocalDateTime date;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+}
