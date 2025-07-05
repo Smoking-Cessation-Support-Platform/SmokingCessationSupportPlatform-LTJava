@@ -47,14 +47,8 @@ const DuocPham = () => {
     navigate("/login");
   };
 
-  const goTo = (page) => {
-    const reactPageMap = {
-      'canhan.html': '/canhan',
-      'member.html': '/member',
-      'login1.html': '/login'
-    };
-    const targetPath = reactPageMap[page] || `/${page.replace('.html', '')}`;
-    navigate(targetPath);
+  const goTo = (path) => {
+    navigate(path);
   };
 
   return (
@@ -233,11 +227,7 @@ const DuocPham = () => {
         <Link to="/gioithieu">Về chúng tôi</Link>
         <Link to="/huongdancaithuoc">Hướng dẫn cai thuốc</Link>
         <Link to="/tuvan">Dịch vụ</Link>
-<<<<<<< HEAD
-        <a href="huanluyenvien.html">Dành cho huấn luyện viên</a>
-=======
-        <Link to="huanluyenvien_home">Dành cho huấn luyện viên</Link>
->>>>>>> bec15bc28804ae31dee31f0f48090beb37ed57ba
+        <Link to="/huanluyenvien_home">Dành cho huấn luyện viên</Link>
         <Link to="/blog">Câu chuyện thành công</Link>
         <Link to="/lienhe">Liên hệ</Link>
       </nav>
@@ -291,21 +281,12 @@ const DuocPham = () => {
 
       <div id="overlay"></div>
       <div id="sidebar">
-<<<<<<< HEAD
-        <div className="sidebar-item" onClick={() => goTo('canhan.html')}>👤 Trang cá nhân</div>
-        <div className="sidebar-item" onClick={() => goTo('member.html')}>💬 Dịch vụ khách hàng</div>
-=======
         <div className="sidebar-item" onClick={() => goTo('/canhan')}>👤 Trang cá nhân</div>
         <div className="sidebar-item" onClick={() => goTo('/member')}>💬 Dịch vụ khách hàng</div>
->>>>>>> bec15bc28804ae31dee31f0f48090beb37ed57ba
         <div className="sidebar-item" onClick={dangXuat}>🚪 Đăng xuất</div>
       </div>
     </>
   );
 };
 
-<<<<<<< HEAD
 export default DuocPham;
-=======
-export default DuocPham;
->>>>>>> bec15bc28804ae31dee31f0f48090beb37ed57ba
