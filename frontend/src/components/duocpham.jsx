@@ -47,14 +47,8 @@ const DuocPham = () => {
     navigate("/login");
   };
 
-  const goTo = (page) => {
-    const reactPageMap = {
-      'canhan.html': '/canhan',
-      'member.html': '/member',
-      'login1.html': '/login'
-    };
-    const targetPath = reactPageMap[page] || `/${page.replace('.html', '')}`;
-    navigate(targetPath);
+  const goTo = (path) => {
+    navigate(path);
   };
 
   return (
@@ -233,7 +227,7 @@ const DuocPham = () => {
         <Link to="/gioithieu">Về chúng tôi</Link>
         <Link to="/huongdancaithuoc">Hướng dẫn cai thuốc</Link>
         <Link to="/tuvan">Dịch vụ</Link>
-        <a href="huanluyenvien.html">Dành cho huấn luyện viên</a>
+        <Link to="/huanluyenvien_home">Dành cho huấn luyện viên</Link>
         <Link to="/blog">Câu chuyện thành công</Link>
         <Link to="/lienhe">Liên hệ</Link>
       </nav>
