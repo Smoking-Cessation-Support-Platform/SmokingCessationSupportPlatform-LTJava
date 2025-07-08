@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { saveSmokingData } from '../api/smokingDataApi';
 
 const BaiLam = () => {
@@ -56,6 +56,25 @@ const BaiLam = () => {
     const [answers, setAnswers] = useState(Array(questions.length).fill(null));
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    const calculateTotalScore = () => {
+        console.log('Current answers:', answers);
+        let score = 0;
+        answers.forEach((answer, index) => {
+            if (answer !== null) {
+                const answerIndex = parseInt(answer);
+                console.log(`Question ${index + 1}:`, {
+                    answer: answerIndex,
+                    points: questions[index].points[answerIndex]
+                });
+                if (questions[index] && Array.isArray(questions[index].points) && questions[index].points[answerIndex] !== undefined) {
+                    score += questions[index].points[answerIndex];
+                }
+            }
+        });
+        console.log('Final score:', score);
+        return score;
+    };
+
     const saveAssessmentData = async (totalScore) => {
         try {
             const userId = localStorage.getItem('userId');
@@ -66,22 +85,11 @@ const BaiLam = () => {
             }
             
             const today = new Date().toISOString().split('T')[0];
-            // Determine addiction level based on total score
-            let addictionLevel = 'Nhẹ';
-            if (totalScore > 8) {
-                addictionLevel = 'Rất nặng';
-            } else if (totalScore > 6) {
-                addictionLevel = 'Nặng';
-            } else if (totalScore > 3) {
-                addictionLevel = 'Trung bình';
-            }
 
             const smokingData = {
                 date: today,
-                cigarettesSmoked: calculateCigarettesCount(answers[3]),
-                cravingLevel: totalScore,
-                addictionLevel: addictionLevel,
-                notes: 'Kết quả đánh giá Fagerstrom',
+                score: totalScore,
+                notes: `Kết quả đánh giá Fagerstrom: ${totalScore}/10 điểm`,
                 assessmentCompleted: true
             };
             
@@ -109,26 +117,6 @@ const BaiLam = () => {
         }
     };
 
-    const calculateCigarettesCount = (answerIndex) => {
-        // Convert answer index to approximate number of cigarettes
-        switch(answerIndex) {
-            case 0: return 5;   // 10 điếu trở xuống
-            case 1: return 15;  // 11-20 điếu
-            case 2: return 25;  // 21-30 điếu
-            case 3: return 35;  // Trên 30 điếu
-            default: return 0;
-        }
-    };
-
-    const calculateTotalScore = () => {
-        return answers.reduce((total, answer, index) => {
-            if (answer !== null) {
-                return total + questions[index].points[answer];
-            }
-            return total;
-        }, 0);
-    };
-
     const handleNextQuestion = async () => {
         if (selectedAnswer === null) {
             setError("Vui lòng chọn một câu trả lời.");
@@ -137,8 +125,9 @@ const BaiLam = () => {
 
         // Save current answer
         const newAnswers = [...answers];
-        newAnswers[currentQuestionIndex] = parseInt(selectedAnswer);
+        newAnswers[currentQuestionIndex] = selectedAnswer;
         setAnswers(newAnswers);
+        console.log('Saved answer for question', currentQuestionIndex + 1, ':', selectedAnswer);
         setSelectedAnswer(null);
         setError(null);
 
@@ -149,6 +138,7 @@ const BaiLam = () => {
             setLoading(true);
             try {
                 const totalScore = calculateTotalScore();
+                console.log('Total score calculated:', totalScore);
                 const saved = await saveAssessmentData(totalScore);
                 if (saved) {
                     setCurrentQuestionIndex(questions.length);
@@ -165,11 +155,15 @@ const BaiLam = () => {
     };
 
     const handleAnswerChange = (e) => {
-        setSelectedAnswer(e.target.value);
+        const value = parseInt(e.target.value);
+        if (!isNaN(value)) {
+            setSelectedAnswer(value);
+            console.log('Selected answer:', value);
+        }
     };
 
     const handleGoBack = () => {
-        navigate(-1); // Navigates back one step in the browser history
+        navigate(-1);
     };
 
     const handleRetry = () => {
@@ -188,6 +182,21 @@ const BaiLam = () => {
                 setError(err.message || 'Vẫn không thể lưu kết quả. Vui lòng thử lại sau.');
             })
             .finally(() => setLoading(false));
+    };
+
+    const handleReset = () => {
+        setCurrentQuestionIndex(0);
+        setSelectedAnswer(null);
+        setAnswers(Array(questions.length).fill(null));
+        setError(null);
+        setIsSubmitting(false);
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('userId');
+        localStorage.removeItem('isMember');
+        navigate('/login');
     };
 
     const renderQuestionContent = () => {
@@ -209,7 +218,7 @@ const BaiLam = () => {
                             Thử lại
                         </button>
                         <button 
-                            onClick={() => setCurrentQuestionIndex(0)} 
+                            onClick={handleReset} 
                             className="btn-secondary"
                         >
                             Làm lại từ đầu
@@ -222,30 +231,48 @@ const BaiLam = () => {
         if (currentQuestionIndex === questions.length) {
             const totalScore = calculateTotalScore();
             let resultText = '';
+            let resultLevel = '';
             
             if (totalScore <= 2) {
-                resultText = 'Mức độ nghiện rất thấp. Bạn có thể bỏ thuốc dễ dàng.';
+                resultLevel = 'Mức 1';
+                resultText = 'Nghiện rất nhẹ: Bạn có thể tự cai thuốc.';
             } else if (totalScore <= 4) {
-                resultText = 'Mức độ nghiện thấp. Bạn có thể bỏ thuốc với sự quyết tâm.';
+                resultLevel = 'Mức 2';
+                resultText = 'Nghiện nhẹ: Cần thêm quyết tâm và kế hoạch cai thuốc rõ ràng.';
             } else if (totalScore <= 6) {
-                resultText = 'Mức độ nghiện trung bình. Bạn nên tìm sự hỗ trợ để bỏ thuốc.';
+                resultLevel = 'Mức 3';
+                resultText = 'Nghiện trung bình: Nên tham khảo ý kiến chuyên gia để được hỗ trợ.';
+            } else if (totalScore <= 8) {
+                resultLevel = 'Mức 4';
+                resultText = 'Nghiện nặng: Cần có sự hỗ trợ từ chuyên gia và người thân.';
             } else {
-                resultText = 'Mức độ nghiện cao. Bạn nên tìm sự giúp đỡ từ chuyên gia.';
+                resultLevel = 'Mức 5';
+                resultText = 'Nghiện rất nặng: Cần được điều trị và hỗ trợ y tế chuyên sâu.';
             }
 
             return (
                 <div className="result-container">
-                    <h3>Kết quả đánh giá</h3>
-                    <p>Điểm số của bạn: <strong>{totalScore}/10</strong></p>
-                    <p className="result-text">{resultText}</p>
-                    <p className="success-message">Dữ liệu đã được lưu vào nhật ký hút thuốc của bạn.</p>
-                    <div className="button-group">
-                        <button onClick={() => navigate('/member')} className="btn-primary">
-                            Về trang chủ
-                        </button>
-                        <button onClick={() => setCurrentQuestionIndex(0)} className="btn-secondary">
+                    <h2>Kết quả đánh giá mức độ nghiện thuốc lá</h2>
+                    <div className="result-box">
+                        <div className="result-level">{resultLevel}</div>
+                        <div className="result-description">{resultText}</div>
+                    </div>
+                    <div className="result-actions">
+                        <button onClick={handleReset} className="btn-primary">
                             Làm lại đánh giá
                         </button>
+                        <Link to="/canhan" className="btn-secondary">
+                            Xem nhật ký hút thuốc
+                        </Link>
+                    </div>
+                    <div className="recommendation-box">
+                        <h4>Các bước tiếp theo:</h4>
+                        <ul>
+                            <li>Lập kế hoạch cai thuốc chi tiết</li>
+                            <li>Tìm hiểu các phương pháp cai thuốc phù hợp</li>
+                            <li>Chia sẻ với người thân và nhận sự hỗ trợ</li>
+                            <li>Theo dõi tiến trình cai thuốc hàng ngày</li>
+                        </ul>
                     </div>
                 </div>
             );
@@ -263,7 +290,7 @@ const BaiLam = () => {
                                 name="answer"
                                 value={i}
                                 id={`option-${i}`}
-                                checked={selectedAnswer === String(i)}
+                                checked={selectedAnswer === i}
                                 onChange={handleAnswerChange}
                             />
                             <span className="radio-custom"></span>
@@ -281,404 +308,547 @@ const BaiLam = () => {
     }
 
     return (
-        <div className="container">
-            <button onClick={() => navigate(-1)} className="back-btn">
-                ← Quay lại
-            </button>
-            
-            <div className="content-box">
-                <h2 className="page-title">Đánh giá mức độ nghiện thuốc lá</h2>
-                <div className="divider"></div>
-                
-                <div className="question-box">
-                    <style jsx>{`
-                        /* Global Container */
-                        .container {
-                            max-width: 900px;
-                            margin: 0 auto;
-                            padding: 2rem 1rem;
-                            min-height: 100vh;
-                            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
-                            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-                        }
+        <>
+            <style>{`
+                * { box-sizing: border-box; }
+                body {
+                    margin: 0;
+                    font-family: 'Roboto', sans-serif;
+                    background: #fff;
+                    color: #333;
+                    line-height: 1.6;
+                    min-height: 100vh;
+                    display: flex;
+                    flex-direction: column;
+                }
+                a { text-decoration: none; color: inherit; }
 
-                        /* Back Button */
-                        .back-btn {
-                            display: inline-flex;
-                            align-items: center;
-                            gap: 0.5rem;
-                            background: #fff;
-                            border: 1px solid #e0e0e0;
-                            border-radius: 50px;
-                            padding: 0.6rem 1.2rem;
-                            font-size: 0.95rem;
-                            color: #444;
-                            cursor: pointer;
-                            transition: all 0.2s ease;
-                            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-                            margin-bottom: 1.5rem;
-                        }
+                header {
+                    background: #004d40;
+                    color: white;
+                    padding: 12px 20px;
+                }
+                .topbar {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    flex-wrap: wrap;
+                }
+                .topbar-left {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                }
+                .topbar-left img {
+                    height: 45px;
+                }
 
-                        .back-btn:hover {
-                            background: #f8f9fa;
-                            transform: translateX(-3px);
-                            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-                        }
+                nav {
+                    background: #b71c1c;
+                    display: flex;
+                    flex-wrap: wrap;
+                    justify-content: center;
+                    padding: 12px 0;
+                }
+                nav a {
+                    color: #fff;
+                    margin: 0 10px;
+                    padding: 6px 12px;
+                    font-weight: bold;
+                    transition: background 0.3s;
+                }
+                nav a:hover {
+                    background: rgba(255,255,255,0.2);
+                    border-radius: 4px;
+                }
 
-                        /* Content Box */
-                        .content-box {
-                            background: #fff;
-                            border-radius: 16px;
-                            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-                            padding: 2.5rem;
-                            position: relative;
-                            overflow: hidden;
-                        }
+                .container {
+                    max-width: 1200px;
+                    margin: 40px auto;
+                    padding: 20px;
+                    position: relative;
+                    flex-grow: 1;
+                }
 
-                        /* Page Title */
-                        .page-title {
-                            color: #2d3748;
-                            font-size: 1.8rem;
-                            font-weight: 700;
-                            text-align: center;
-                            margin-bottom: 1.5rem;
-                            background: linear-gradient(90deg, #4f46e5, #7c3aed);
-                            -webkit-background-clip: text;
-                            -webkit-text-fill-color: transparent;
-                            position: relative;
-                            padding-bottom: 1rem;
-                        }
+                .back-btn {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    background: linear-gradient(135deg, #009688 0%, #00796b 100%);
+                    color: #fff;
+                    border: none;
+                    padding: 10px 20px 10px 40px;
+                    border-radius: 25px;
+                    cursor: pointer;
+                    font-weight: 500;
+                    font-size: 14px;
+                    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                    transition: all 0.3s ease;
+                    position: relative;
+                    overflow: hidden;
+                }
 
-                        .page-title::after {
-                            content: '';
-                            position: absolute;
-                            bottom: 0;
-                            left: 50%;
-                            transform: translateX(-50%);
-                            width: 100px;
-                            height: 4px;
-                            background: linear-gradient(90deg, #4f46e5, #7c3aed);
-                            border-radius: 2px;
-                        }
+                .back-btn::before {
+                    content: '←';
+                    position: absolute;
+                    left: 15px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    font-size: 16px;
+                    transition: all 0.3s ease;
+                }
 
-                        /* Divider */
-                        .divider {
-                            height: 1px;
-                            background: linear-gradient(90deg, rgba(79, 70, 229, 0.1), rgba(124, 58, 237, 0.4), rgba(79, 70, 229, 0.1));
-                            margin: 1.5rem 0 2rem;
-                        }
+                .back-btn:hover {
+                    background: linear-gradient(135deg, #00796b 0%, #00695c 100%);
+                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+                    transform: translateY(-2px);
+                    padding-left: 45px;
+                }
 
-                        /* Question Box */
-                        .question-box {
-                            background: #fff;
-                            border-radius: 12px;
-                            overflow: hidden;
-                        }
+                .back-btn:active {
+                    transform: translateY(0);
+                    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                }
 
-                        /* Progress Indicator */
-                        .progress-indicator {
-                            text-align: right;
-                            color: #64748b;
-                            font-size: 0.9rem;
-                            font-weight: 500;
-                            margin-bottom: 1.5rem;
-                            background: #f8fafc;
-                            padding: 0.6rem 1rem;
-                            border-radius: 8px;
-                            border: 1px solid #e2e8f0;
-                            display: inline-block;
-                        }
+                #menuIconWrapper {
+                    position: fixed;
+                    top: 16px;
+                    right: 16px;
+                    z-index: 1001;
+                    display: block;
+                }
 
-                        /* Question Content */
-                        .question-content {
-                            padding: 1.5rem 0;
-                        }
+                .circle-avatar {
+                    width: 48px;
+                    height: 48px;
+                    border-radius: 50%;
+                    overflow: hidden;
+                    border: 2px solid red;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background-color: white;
+                    cursor: pointer;
+                }
 
-                        /* Question Text */
-                        h3 {
-                            color: #1e293b;
-                            font-size: 1.3rem;
-                            line-height: 1.6;
-                            margin-bottom: 1.8rem;
-                            font-weight: 600;
-                        }
+                #menuIcon {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                }
 
-                        /* Answer Options */
-                        .radio-option {
-                            display: block;
-                            padding: 1.1rem 1.5rem;
-                            margin-bottom: 0.8rem;
-                            background: #f8fafc;
-                            border: 1px solid #e2e8f0;
-                            border-radius: 10px;
-                            cursor: pointer;
-                            transition: all 0.2s ease;
-                            position: relative;
-                            padding-left: 3.2rem;
-                            font-size: 1rem;
-                            color: #334155;
-                        }
+                #sidebar {
+                    position: fixed;
+                    top: 0;
+                    right: -320px;
+                    width: 300px;
+                    height: 100%;
+                    background-color: white;
+                    box-shadow: -2px 0 10px rgba(0,0,0,0.3);
+                    z-index: 1000;
+                    padding: 20px;
+                    transition: right 0.3s ease;
+                    overflow-y: auto;
+                }
 
-                        .radio-option:hover {
-                            background: #f1f5f9;
-                            border-color: #cbd5e1;
-                            transform: translateY(-1px);
-                        }
+                #sidebar.open {
+                    right: 0;
+                }
 
-                        .radio-option input[type="radio"] {
-                            position: absolute;
-                            opacity: 0;
-                        }
+                .sidebar-item {
+                    display: flex;
+                    align-items: center;
+                    padding: 12px 10px;
+                    border-bottom: 1px solid #eee;
+                    cursor: pointer;
+                    color: #333;
+                    font-size: 16px;
+                }
 
-                        .radio-option label {
-                            display: inline;
-                            padding: 0;
-                            margin: 0;
-                            cursor: pointer;
-                            position: relative;
-                            font-size: 1rem;
-                            color: #334155;
-                        }
+                .sidebar-item i {
+                    margin-right: 10px;
+                    font-style: normal;
+                }
 
-                        .radio-custom {
-                            position: absolute;
-                            top: 50%;
-                            left: 1.2rem;
-                            transform: translateY(-50%);
-                            width: 1.2rem;
-                            height: 1.2rem;
-                            border: 2px solid #cbd5e1;
-                            border-radius: 50%;
-                            background: #fff;
-                            transition: all 0.2s ease;
-                        }
+                .sidebar-item:hover {
+                    background-color: #f0f0f0;
+                }
 
-                        input[type="radio"]:checked + .radio-custom {
-                            background: #4f46e5;
-                            border-color: #4f46e5;
-                            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
-                        }
+                #overlay {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0,0,0,0.3);
+                    display: none;
+                    z-index: 999;
+                }
 
-                        input[type="radio"]:checked + .radio-custom::after {
-                            content: '';
-                            position: absolute;
-                            top: 50%;
-                            left: 50%;
-                            transform: translate(-50%, -50%);
-                            width: 0.6rem;
-                            height: 0.6rem;
-                            background: white;
-                            border-radius: 50%;
-                        }
+                #overlay.show {
+                    display: block;
+                }
 
-                        /* Buttons */
-                        .btn-next, .btn-primary, .btn-secondary {
-                            display: inline-flex;
-                            align-items: center;
-                            justify-content: center;
-                            padding: 0.9rem 2rem;
-                            border-radius: 10px;
-                            font-weight: 600;
-                            font-size: 1rem;
-                            cursor: pointer;
-                            transition: all 0.2s ease;
-                            border: none;
-                            margin-top: 1.5rem;
-                            width: 100%;
-                        }
+                footer {
+                    background: #004d40;
+                    color: #fff;
+                    padding: 20px;
+                    text-align: center;
+                    margin-top: auto;
+                }
 
-                        .btn-next {
-                            background: linear-gradient(135deg, #4f46e5, #7c3aed);
-                            color: white;
-                            box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
-                        }
+                /* Question Box Styles */
+                .content-box {
+                    background: #ffffff;
+                    border-radius: 16px;
+                    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+                    padding: 2.5rem;
+                    position: relative;
+                    overflow: hidden;
+                    border: 1px solid rgba(59, 130, 246, 0.1);
+                }
 
-                        .btn-next:hover {
-                            transform: translateY(-2px);
-                            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
-                        }
+                .page-title {
+                    color: #1e293b;
+                    font-size: 2rem;
+                    font-weight: 700;
+                    text-align: center;
+                    margin: 1rem 0 1.5rem;
+                    background: linear-gradient(90deg, #22c55e, #3b82f6, #f97316);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    position: relative;
+                    padding-bottom: 1rem;
+                }
 
-                        .btn-next:active {
-                            transform: translateY(0);
-                        }
+                .divider {
+                    height: 2px;
+                    background: linear-gradient(90deg, #22c55e, #3b82f6, #f97316);
+                    margin: 1.5rem 0 2rem;
+                    border-radius: 2px;
+                    opacity: 0.3;
+                }
 
-                        /* Result Container */
-                        .result-container {
-                            text-align: center;
-                            padding: 2rem 0;
-                        }
+                .question-box {
+                    background: #ffffff;
+                    border-radius: 12px;
+                    overflow: hidden;
+                }
 
-                        .result-container h3 {
-                            color: #4f46e5;
-                            font-size: 1.5rem;
-                            margin-bottom: 1.5rem;
-                        }
+                .progress-indicator {
+                    text-align: right;
+                    color: #3b82f6;
+                    font-size: 1rem;
+                    font-weight: 600;
+                    margin-bottom: 1.5rem;
+                    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(34, 197, 94, 0.1));
+                    padding: 0.8rem 1.2rem;
+                    border-radius: 8px;
+                    display: inline-block;
+                    border: 1px solid rgba(59, 130, 246, 0.2);
+                }
 
-                        .result-text {
-                            font-size: 1.1rem;
-                            color: #475569;
-                            line-height: 1.7;
-                            margin: 1.5rem 0;
-                        }
+                .question-content {
+                    padding: 1.5rem;
+                    background: #ffffff;
+                    border-radius: 12px;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+                }
 
-                        .success-message {
-                            color: #10b981;
-                            font-weight: 500;
-                            background: #ecfdf5;
-                            padding: 1rem;
-                            border-radius: 8px;
-                            margin: 1.5rem 0;
-                            display: inline-block;
-                        }
+                h3 {
+                    color: #1e293b;
+                    font-size: 1.4rem;
+                    line-height: 1.6;
+                    margin-bottom: 2rem;
+                    font-weight: 600;
+                    padding-left: 1rem;
+                    border-left: 4px solid #3b82f6;
+                }
 
-                        .button-group {
-                            display: flex;
-                            gap: 1rem;
-                            margin-top: 2rem;
-                            justify-content: center;
-                        }
+                .radio-option {
+                    display: block;
+                    padding: 1.2rem 1.5rem;
+                    margin-bottom: 1rem;
+                    background: #f8fafc;
+                    border: 2px solid #e2e8f0;
+                    border-radius: 12px;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    position: relative;
+                    padding-left: 3.5rem;
+                }
 
-                        .btn-primary {
-                            background: #4f46e5;
-                            color: white;
-                            width: auto;
-                            padding: 0.9rem 2rem;
-                        }
+                .radio-option:hover {
+                    background: #f0f9ff;
+                    border-color: #3b82f6;
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+                }
 
-                        .btn-primary:hover {
-                            background: #4338ca;
-                            transform: translateY(-2px);
-                            box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3);
-                        }
+                .radio-option input[type="radio"]:checked + .radio-custom {
+                    background: linear-gradient(135deg, #3b82f6, #22c55e);
+                    border-color: #3b82f6;
+                    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+                }
 
-                        .btn-secondary {
-                            background: white;
-                            color: #4f46e5;
-                            border: 1px solid #e2e8f0;
-                            width: auto;
-                            padding: 0.9rem 2rem;
-                        }
+                .btn-next {
+                    background: linear-gradient(135deg, #3b82f6, #22c55e);
+                    color: white;
+                    padding: 1rem 2rem;
+                    border-radius: 10px;
+                    font-weight: 600;
+                    font-size: 1.1rem;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    border: none;
+                    margin-top: 2rem;
+                    width: 100%;
+                    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+                }
 
-                        .btn-secondary:hover {
-                            background: #f8fafc;
-                            border-color: #cbd5e1;
-                            transform: translateY(-2px);
-                        }
+                .btn-next:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+                }
 
-                        /* Loading State */
-                        .loading {
-                            text-align: center;
-                            padding: 3rem 0;
-                        }
+                .result-container {
+                    text-align: center;
+                    padding: 2rem;
+                    background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(34, 197, 94, 0.05));
+                    border-radius: 16px;
+                    border: 1px solid rgba(59, 130, 246, 0.1);
+                }
 
-                        .loading-spinner {
-                            border: 3px solid rgba(79, 70, 229, 0.1);
-                            border-top-color: #4f46e5;
-                            border-radius: 50%;
-                            width: 40px;
-                            height: 40px;
-                            animation: spin 1s linear infinite;
-                            margin: 0 auto 1rem;
-                        }
+                .result-container h2 {
+                    color: #1e40af;
+                    font-size: 1.8rem;
+                    margin-bottom: 1.5rem;
+                }
 
-                        /* Error Message */
-                        .error-message {
-                            background: #fef2f2;
-                            color: #dc2626;
-                            padding: 1rem;
-                            border-radius: 8px;
-                            margin: 1rem 0;
-                            text-align: center;
-                            border: 1px solid #fecaca;
-                        }
+                .result-box {
+                    background: white;
+                    border-radius: 12px;
+                    padding: 2rem;
+                    margin: 1.5rem 0;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+                }
 
-                        /* Animations */
-                        @keyframes spin {
-                            to { transform: rotate(360deg); }
-                        }
+                .result-level {
+                    color: #1e40af;
+                    font-size: 1.4rem;
+                    font-weight: 600;
+                    margin-bottom: 1rem;
+                    padding-bottom: 1rem;
+                    border-bottom: 2px solid rgba(59, 130, 246, 0.2);
+                }
 
-                        /* Responsive Design */
-                        @media (max-width: 768px) {
-                            .container {
-                                padding: 1rem;
-                            }
+                .result-description {
+                    color: #1e293b;
+                    font-size: 1.2rem;
+                    line-height: 1.8;
+                }
 
-                            .content-box {
-                                padding: 1.5rem;
-                            }
+                .result-actions {
+                    display: flex;
+                    gap: 16px;
+                    margin-top: 24px;
+                    justify-content: center;
+                }
 
-                            .page-title {
-                                font-size: 1.5rem;
-                            }
+                .btn-primary {
+                    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+                    color: white;
+                    padding: 12px 24px;
+                    border-radius: 8px;
+                    border: none;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    box-shadow: 0 4px 6px rgba(59, 130, 246, 0.2);
+                }
 
-                            .button-group {
-                                flex-direction: column;
-                                gap: 0.75rem;
-                            }
+                .btn-primary:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 12px rgba(59, 130, 246, 0.3);
+                }
 
-                            .btn-primary, .btn-secondary {
-                                width: 100%;
-                                margin: 0;
-                            }
+                .btn-secondary {
+                    background: white;
+                    color: #3b82f6;
+                    padding: 12px 24px;
+                    border-radius: 8px;
+                    border: 2px solid #3b82f6;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    text-decoration: none;
+                    display: inline-block;
+                }
 
-                            h3 {
-                                font-size: 1.2rem;
-                            }
+                .btn-secondary:hover {
+                    background: #f0f9ff;
+                    transform: translateY(-2px);
+                }
 
-                            .radio-option {
-                                padding: 1rem 1.2rem 1rem 3rem;
-                                font-size: 0.95rem;
-                                display: flex;
-                                align-items: center;
-                            }
+                .recommendation-box {
+                    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.1) 100%);
+                    border-radius: 12px;
+                    padding: 24px;
+                    margin-top: 24px;
+                    text-align: left;
+                }
 
-                            .radio-option input[type="radio"] {
-                                display: none;
-                            }
+                .recommendation-box h4 {
+                    color: #1e40af;
+                    margin-bottom: 16px;
+                    font-size: 1.2rem;
+                    text-align: center;
+                }
 
-                            .radio-option label {
-                                display: inline;
-                                padding: 0;
-                                margin: 0;
-                                cursor: pointer;
-                                position: relative;
-                                font-size: 1rem;
-                                color: #334155;
-                            }
+                .recommendation-box ul {
+                    list-style: none;
+                    padding: 0;
+                    margin: 0;
+                }
 
-                            .radio-option .radio-custom {
-                                position: absolute;
-                                top: 50%;
-                                left: 1.2rem;
-                                transform: translateY(-50%);
-                                width: 1.2rem;
-                                height: 1.2rem;
-                                border: 2px solid #cbd5e1;
-                                border-radius: 50%;
-                                background: #fff;
-                                transition: all 0.2s ease;
-                            }
+                .recommendation-box li {
+                    padding: 8px 0 8px 24px;
+                    position: relative;
+                    color: #1e293b;
+                }
 
-                            .radio-option input[type="radio"]:checked + .radio-custom {
-                                background: #4f46e5;
-                                border-color: #4f46e5;
-                                box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
-                            }
+                .recommendation-box li:before {
+                    content: "•";
+                    color: #3b82f6;
+                    font-weight: bold;
+                    position: absolute;
+                    left: 0;
+                }
 
-                            .radio-option input[type="radio"]:checked + .radio-custom::after {
-                                content: '';
-                                position: absolute;
-                                top: 50%;
-                                left: 50%;
-                                transform: translate(-50%, -50%);
-                                width: 0.6rem;
-                                height: 0.6rem;
-                                background: white;
-                                border-radius: 50%;
-                            }
-                                            `}</style>
+                /* Loading State */
+                .loading {
+                    text-align: center;
+                    padding: 3rem 0;
+                }
 
-                    <div className="question-content">
+                .loading-spinner {
+                    border: 3px solid rgba(59, 130, 246, 0.1);
+                    border-top-color: #3b82f6;
+                    border-radius: 50%;
+                    width: 50px;
+                    height: 50px;
+                    animation: spin 1s linear infinite;
+                    margin: 0 auto 1.5rem;
+                }
+
+                /* Error Message */
+                .error-message {
+                    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(249, 115, 22, 0.1));
+                    color: #ef4444;
+                    padding: 1.2rem;
+                    border-radius: 10px;
+                    margin: 1rem 0;
+                    text-align: center;
+                    border: 1px solid rgba(239, 68, 68, 0.2);
+                    font-weight: 500;
+                }
+
+                /* Animations */
+                @keyframes spin {
+                    to { transform: rotate(360deg); }
+                }
+
+                @keyframes pulse {
+                    0% { transform: scale(1); }
+                    50% { transform: scale(1.02); }
+                    100% { transform: scale(1); }
+                }
+
+                /* Responsive Design */
+                @media (max-width: 768px) {
+                    .container {
+                        padding: 1rem;
+                    }
+
+                    .content-box {
+                        padding: 1.5rem;
+                    }
+
+                    .page-title {
+                        font-size: 1.6rem;
+                    }
+
+                    .button-group {
+                        flex-direction: column;
+                    }
+
+                    h3 {
+                        font-size: 1.2rem;
+                        padding-left: 0.8rem;
+                    }
+
+                    .radio-option {
+                        padding: 1rem 1.2rem 1rem 3rem;
+                    }
+                }
+
+                @media (max-width: 640px) {
+                    .result-actions {
+                        flex-direction: column;
+                    }
+
+                    .btn-primary,
+                    .btn-secondary {
+                        width: 100%;
+                        text-align: center;
+                    }
+
+                    .result-container {
+                        padding: 1rem;
+                    }
+
+                    .result-box {
+                        padding: 1.5rem;
+                    }
+
+                    .result-level {
+                        font-size: 1.2rem;
+                    }
+
+                    .result-description {
+                        font-size: 1.1rem;
+                    }
+                }
+            `}</style>
+
+            <header>
+                <div className="topbar">
+                    <div className="topbar-left">
+                        <img src="/images1/logo.jpg" alt="Logo CaiThuocTot.vn" />
+                        <div><strong>CaiThuocTot.vn</strong> - Hành trình vì sức khỏe</div>
+                    </div>
+                </div>
+            </header>
+
+            <nav>
+                <Link to="/">Trang chủ</Link>
+                <Link to="/gioithieu">Về chúng tôi</Link>
+                <Link to="/huongdancaithuoc">Hướng dẫn cai thuốc</Link>
+                <Link to="/tuvan">Dịch vụ</Link>
+                <Link to="/huanluyenvien_home">Dành cho huấn luyện viên</Link>
+                <Link to="/blog">Câu chuyện thành công</Link>
+                <Link to="/lienhe">Liên hệ</Link>
+            </nav>
+
+            <div className="container">
+                <button className="back-btn" onClick={handleGoBack}>Quay lại</button>
+
+                <div className="content-box">
+                    <div className="header-decoration"></div>
+                    <h2 className="page-title">Đánh giá mức độ nghiện thuốc lá</h2>
+                    <div className="divider"></div>
+                    
+                    <div className="question-box">
                         <div className="progress-indicator">
                             {currentQuestionIndex < questions.length 
                                 ? `Câu hỏi ${currentQuestionIndex + 1}/${questions.length}`
@@ -688,7 +858,27 @@ const BaiLam = () => {
                     </div>
                 </div>
             </div>
-        </div>
+
+            <footer>
+                <p>© 2025 CaiThuocTot.vn - Bản quyền thuộc về nhóm phát triển</p>
+                <p>Địa chỉ: 70 Đ. Tô Ký, Tân Chánh Hiệp, Quận 12, Hồ Chí Minh | Email: nhubdq3680@ut.edu.vn | Hotline: 0364155024</p>
+            </footer>
+
+            {/* Sidebar Menu */}
+            <div id="menuIconWrapper" onClick={() => document.getElementById('sidebar').classList.add('open')}>
+                <div className="circle-avatar">
+                    <img id="menuIcon" src="/images1/cainghien.jpeg" alt="Avatar menu" />
+                </div>
+            </div>
+
+            <div id="overlay" onClick={() => document.getElementById('sidebar').classList.remove('open')}></div>
+
+            <div id="sidebar">
+                <Link to="/canhan" className="sidebar-item"><i>👥</i> Trang cá nhân</Link>
+                <Link to="/member" className="sidebar-item"><i>💬</i> Dịch vụ khách hàng</Link>
+                <div className="sidebar-item" onClick={handleLogout}><i>🚪</i> Đăng xuất</div>
+            </div>
+        </>
     );
 };
 

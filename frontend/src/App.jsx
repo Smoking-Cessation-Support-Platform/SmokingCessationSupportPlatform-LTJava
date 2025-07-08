@@ -26,7 +26,10 @@ import ThongKeHuanLuyenVien from "./components/thongke_huanluyenvien";
 import LoginAdmin from "./components/login-admin";
 import AdminPage from "./components/admin";
 import DanhSachNguoiDung from "./components/danhsachnguoidung";
-import AdminStatistics from "./components/thongke";
+import AdminStatistics from "./components/thongke1";
+import DanhSachHuanLuyenVien from "./components/danhsachhuanluyenvien";
+import CoachStatistics from './components/thongke2';
+
 
 function App() {
   return (
@@ -65,7 +68,9 @@ function App() {
           <Route path="/login-admin" element={<LoginAdmin />} />
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/danhsachnguoidung" element={<DanhSachNguoiDung />} />
-          <Route path="/thongke" element={<AdminStatistics />} />
+          <Route path="/danhsachhuanluyenvien" element={<DanhSachHuanLuyenVien />} />
+          <Route path="/thongke1" element={<AdminStatistics />} />
+          <Route path="/thongke2" element={<CoachStatistics />} />
           
           {/* 404 Route */}
           <Route path="*" element={<Navigate to="/" replace />} />
