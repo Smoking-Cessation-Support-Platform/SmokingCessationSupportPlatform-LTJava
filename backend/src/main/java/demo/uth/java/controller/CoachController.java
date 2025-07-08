@@ -95,8 +95,12 @@ public class CoachController {
         if (!coachService.findById(id).isPresent()) {
             return ResponseEntity.notFound().build();
         }
-        coachService.deleteCoach(id);
-        return ResponseEntity.ok().build();
+        try {
+            coachService.deleteCoach(id);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(e.getMessage());
+        }
     }
 
     @GetMapping("/stats")
