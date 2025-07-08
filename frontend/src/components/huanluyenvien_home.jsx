@@ -1,47 +1,55 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom'; // Import Link ở đây
+import React, { useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 
 const CoachHome = () => {
     const navigate = useNavigate();
 
-    // Hàm kiểm tra đăng nhập
     useEffect(() => {
         const checkAuth = () => {
             const coachData = JSON.parse(localStorage.getItem('coachData'));
             if (!coachData || !coachData.isLoggedIn) {
-                // Nếu chưa đăng nhập, chuyển hướng về trang đăng nhập HLV
-                navigate('/login-coach'); // Đảm bảo đường dẫn này khớp với route của bạn
+                navigate('/login-coach');
             }
         };
 
         checkAuth();
-    }, [navigate]); // navigate là dependency để useEffect biết khi nào cần chạy lại
+    }, [navigate]);
 
-    // Hàm đăng xuất
     const handleLogout = () => {
         if (window.confirm('Bạn có chắc chắn muốn đăng xuất?')) {
             localStorage.removeItem('coachData');
-            navigate('/'); // Đảm bảo đường dẫn này khớp với route Trang chủ của bạn
+            navigate('/');
         }
     };
 
     return (
-        <>
+        <div className="layout-container">
             <style>{`
-                /* Global styles */
-                * { box-sizing: border-box; }
                 html, body {
                     height: 100%;
                     margin: 0;
+                    padding: 0;
+                }
+
+                * { 
+                    box-sizing: border-box;
+                }
+
+                body {
                     font-family: 'Roboto', sans-serif;
                     background: #fff;
                     color: #333;
                     line-height: 1.6;
+                }
+
+                .layout-container {
                     display: flex;
                     flex-direction: column;
                     min-height: 100vh;
+                    position: relative;
+                    padding-bottom: 100px; /* Space for footer */
                 }
-                
+
                 header {
                     background: #004d40;
                     color: white;
@@ -74,7 +82,7 @@ const CoachHome = () => {
                     flex-wrap: wrap;
                 }
 
-                nav a, nav .nav-link { /* Thêm .nav-link để áp dụng style cho Link */
+                nav a, nav .nav-link {
                     color: #fff;
                     margin: 0 10px;
                     padding: 6px 12px;
@@ -83,16 +91,20 @@ const CoachHome = () => {
                     text-decoration: none;
                 }
 
-                nav a:hover, nav .nav-link:hover { /* Thêm .nav-link:hover */
+                nav a:hover, nav .nav-link:hover {
                     background: rgba(255,255,255,0.2);
                     border-radius: 4px;
                 }
 
                 .main-content {
-                    flex-grow: 1;
+                    flex: 1 0 auto;
                     padding: 40px;
                     max-width: 1200px;
+                    margin-bottom: 40px; /* Add margin to prevent content from being hidden behind fixed footer */
                     margin: 0 auto;
+                    width: 100%;
+                    display: flex;
+                    flex-direction: column;
                 }
 
                 .dashboard {
@@ -143,10 +155,19 @@ const CoachHome = () => {
 
                 footer {
                     background: #004d40;
-                    color: #fff;
-                    padding: 20px;
+                    color: white;
                     text-align: center;
-                    flex-shrink: 0;
+                    padding: 20px 0;
+                    position: fixed;
+                    bottom: 0;
+                    width: 100%;
+                    z-index: 1000;
+                    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+                }
+                
+                footer p {
+                    margin: 10px 0;
+                    font-size: 16px;
                 }
 
                 .welcome-section {
@@ -163,16 +184,6 @@ const CoachHome = () => {
                     color: #666;
                     max-width: 800px;
                     margin: 0 auto;
-                }
-
-                .auth-links a {
-                    color: white;
-                    text-decoration: none;
-                    margin: 0 5px;
-                }
-
-                .auth-links a:hover {
-                    text-decoration: underline;
                 }
 
                 .user-info {
@@ -200,8 +211,6 @@ const CoachHome = () => {
             <header>
                 <div className="topbar">
                     <div className="topbar-left">
-                        {/* Đường dẫn tới ảnh trong thư mục public.
-                            Đảm bảo file logo.jpg nằm trong public/images1/ */}
                         <img src="/images1/logo.jpg" alt="Logo CaiThuocTot.vn" />
                         <div><strong>CaiThuocTot.vn</strong> - Hành trình vì sức khỏe</div>
                     </div>
@@ -212,7 +221,6 @@ const CoachHome = () => {
             </header>
 
             <nav>
-                {/* Sử dụng Link component cho tất cả các điều hướng nội bộ */}
                 <Link to="/" className="nav-link">Trang chủ</Link>
                 <Link to="/gioithieu" className="nav-link">Về chúng tôi</Link>
                 <Link to="/huongdancaithuoc" className="nav-link">Hướng dẫn cai thuốc</Link>
@@ -222,11 +230,11 @@ const CoachHome = () => {
                 <Link to="/lienhe" className="nav-link">Liên hệ</Link>
             </nav>
 
-            <div className="main-content">
+            <main className="main-content">
                 <div className="welcome-section">
                     <h1>Chào mừng Huấn Luyện Viên</h1>
                     <p>Đây là trung tâm quản lý của bạn. Từ đây, bạn có thể theo dõi và phản hồi các câu hỏi từ người dùng,
-                       cũng như quản lý các tư vấn đã hoàn thành.</p>
+                        cũng như quản lý các tư vấn đã hoàn thành.</p>
                 </div>
 
                 <div className="dashboard">
@@ -248,13 +256,13 @@ const CoachHome = () => {
                         <Link to="/thongke_huanluyenvien" className="card-button">Xem Thống Kê</Link>
                     </div>
                 </div>
-            </div>
+            </main>
 
             <footer>
                 <p>© 2025 CaiThuocTot.vn - Bản quyền thuộc về nhóm phát triển</p>
                 <p>Địa chỉ: 70 Đ. Tô Ký, Tân Chánh Hiệp, Quận 12, Hồ Chí Minh | Email: nhubdq3680@ut.edu.vn | Hotline: 0364155024</p>
             </footer>
-        </>
+        </div>
     );
 };
 
