@@ -79,8 +79,11 @@ const CauHoiDaXuLy = () => {
         <>
             <style>{`
                 * { box-sizing: border-box; }
-                html, body {
+                html {
                     height: 100%;
+                }
+                body {
+                    min-height: 100vh;
                     margin: 0;
                     font-family: 'Roboto', sans-serif;
                     background: #fff;
@@ -88,7 +91,8 @@ const CauHoiDaXuLy = () => {
                     line-height: 1.6;
                     display: flex;
                     flex-direction: column;
-                    min-height: 100vh;
+                    position: relative;
+                    padding-bottom: 100px; /* Space for footer */
                 }
 
                 header {
@@ -140,10 +144,10 @@ const CauHoiDaXuLy = () => {
                 .section {
                     padding: 40px 0;
                     margin: auto;
-                    flex-grow: 1;
                     width: calc(100% - 6cm);
                     margin-left: 3cm;
                     margin-right: 3cm;
+                    flex: 1 0 auto; /* This will push the footer down */
                 }
 
                 .section h2 {
@@ -279,6 +283,23 @@ const CauHoiDaXuLy = () => {
                     align-items: center;
                     gap: 10px;
                     color: white;
+                }
+
+                footer {
+                    background: #004d40;
+                    color: white;
+                    text-align: center;
+                    padding: 20px 0;
+                    position: fixed;
+                    bottom: 0;
+                    width: 100%;
+                    z-index: 1000;
+                    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+                }
+                
+                footer p {
+                    margin: 10px 0;
+                    font-size: 16px;
                 }
 
                 .logout-btn {

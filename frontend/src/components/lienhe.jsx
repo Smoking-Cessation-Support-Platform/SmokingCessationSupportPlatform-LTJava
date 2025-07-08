@@ -1,37 +1,3 @@
-<<<<<<< HEAD
-=======
-vakypro
-vakypro
-Online
-
-vakypro — 11:29 CH
-Chú ong chăm chỉ — 11:32 CH
-Forwarded
-lienhe.jsx
-import React, { useEffect } from "react";
-import { Link } from 'react-router-dom'; 
-import { useNavigate } from "react-router-dom"; 
-
-const LienHe = () => {
-  const navigate = useNavigate(); 
-Expand
-message.txt
-9 KB
-Forwarded
-blog.jsx
-import React, { useEffect } from "react";
-import { Link } from 'react-router-dom'; 
-import { useNavigate } from "react-router-dom"; 
-const CauChuyenThanhCong = () => {
-  const navigate = useNavigate(); 
-Expand
-message.txt
-11 KB
-﻿
-Chú ong chăm chỉ
-minhmoi.
- 
->>>>>>> 2a4b59d79ee19f84f4d9116fef457c17d7124194
 import React, { useEffect } from "react";
 import { Link } from 'react-router-dom'; 
 import { useNavigate } from "react-router-dom"; 
@@ -73,7 +39,7 @@ const LienHe = () => {
     const navLinks = document.querySelectorAll('nav a');
 
     navLinks.forEach(link => {
-      if (link.getAttribute('href') && currentPath.includes(link.getAttribute('href').replace('.html', ''))) {
+      if (link.getAttribute('href') && link.getAttribute('href').includes(currentPath)) {
         link.classList.add('nav-active');
       }
     });
@@ -82,7 +48,7 @@ const LienHe = () => {
       if (menuIcon) menuIcon.removeEventListener('click', openSidebar);
       if (overlay) overlay.removeEventListener('click', closeSidebar);
     };
-  }, []);
+  }, []); 
 
   const checkLogin = () => {
     const isMember = localStorage.getItem('isMember') === 'true';
@@ -110,20 +76,14 @@ const LienHe = () => {
     navigate("/login"); 
   };
 
-  const goTo = (page) => {
-    const reactPageMap = {
-      'canhan.html': '/canhan',
-      'member.html': '/member',
-      'login1.html': '/login'
-    };
-    const targetPath = reactPageMap[page] || `/${page.replace('.html', '')}`;
-    navigate(targetPath);
+  const goTo = (path) => {
+    navigate(path);
   };
 
   return (
     <>
       <style>{`
-        * {
+         * {
           box-sizing: border-box;
         }
         html, body {
@@ -193,16 +153,13 @@ const LienHe = () => {
           text-align: center;
           margin-bottom: 20px;
         }
+        h2 {
+          color: #b71c1c;
+          margin-top: 30px;
+        }
         p {
           margin-bottom: 15px;
           font-size: 16px;
-        }
-        footer {
-          background: #004d40;
-          color: #fff;
-          padding: 20px;
-          text-align: center;
-          flex-shrink: 0;
         }
         .contact-info {
           margin-top: 20px;
@@ -211,6 +168,25 @@ const LienHe = () => {
           margin: 5px 0;
         }
 
+        /* CHỈ SỬA PHẦN FOOTER */
+        footer {
+          background: #004d40;
+          color: #fff;
+          padding: 20px;
+          text-align: center;
+          width: 100%;
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          z-index: 100;
+        }
+
+        /* Thêm margin-bottom cho main để nội dung không bị footer che */
+        main {
+          margin-bottom: 150px;
+        }
+
+        /* GIỮ NGUYÊN TẤT CẢ CSS KHÁC */
         .auth-links {
           color: white;
         }
@@ -238,7 +214,6 @@ const LienHe = () => {
           height: 100%;
           object-fit: cover;
         }
-
         #sidebar {
           position: fixed;
           top: 0;
@@ -263,7 +238,6 @@ const LienHe = () => {
         .sidebar-item:hover {
             background-color: #f0f0f0;
         }
-
         #overlay {
           position: fixed;
           top: 0; left: 0;
@@ -295,11 +269,7 @@ const LienHe = () => {
         <Link to="/gioithieu">Về chúng tôi</Link>
         <Link to="/huongdancaithuoc">Hướng dẫn cai thuốc</Link>
         <Link to="/tuvan">Dịch vụ</Link>
-<<<<<<< HEAD
-        <a href="huanluyenvien.html">Dành cho huấn luyện viên</a>
-=======
-        <a href="huanluyenvien_home">Dành cho huấn luyện viên</a>
->>>>>>> 2a4b59d79ee19f84f4d9116fef457c17d7124194
+        <Link to="/huanluyenvien_home">Dành cho huấn luyện viên</Link>
         <Link to="/blog">Câu chuyện thành công</Link>
         <Link to="/lienhe" className="nav-active">Liên hệ</Link>
       </nav>
@@ -329,8 +299,8 @@ const LienHe = () => {
 
       <div id="overlay"></div>
       <div id="sidebar">
-        <div className="sidebar-item" onClick={() => goTo('canhan.html')}>👤 Trang cá nhân</div>
-        <div className="sidebar-item" onClick={() => goTo('member.html')}>💬 Dịch vụ khách hàng</div>
+        <div className="sidebar-item" onClick={() => goTo('/canhan')}>👤 Trang cá nhân</div>
+        <div className="sidebar-item" onClick={() => goTo('/member')}>💬 Dịch vụ khách hàng</div>
         <div className="sidebar-item" onClick={dangXuat}>🚪 Đăng xuất</div>
       </div>
     </>
