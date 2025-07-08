@@ -15,7 +15,7 @@ const axiosInstance = axios.create({
 export const getAllUsers = async () => {
   try {
     const token = localStorage.getItem('adminToken');
-    const response = await axiosInstance.get('/admin/users', {
+    const response = await axiosInstance.get('/users', {
       headers: {
         'Authorization': Bearer ${token}
       }
