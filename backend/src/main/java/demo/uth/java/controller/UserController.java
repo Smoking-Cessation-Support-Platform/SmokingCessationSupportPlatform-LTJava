@@ -204,6 +204,7 @@ public class UserController {
             return ResponseEntity.status(500).body("Lỗi khi xóa người dùng: " + e.getMessage());
         }
     }
+    
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody User userDetails) {
