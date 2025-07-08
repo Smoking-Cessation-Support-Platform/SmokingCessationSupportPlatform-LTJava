@@ -35,7 +35,7 @@ export const coachRegister = async (coachData) => {
 // Lấy thông tin huấn luyện viên
 export const getCoachProfile = async (coachId) => {
   try {
-    const response = await axios.get(`${API_URL}/coaches/${coachId}`);
+    const response = await axiosInstance.get(`/coaches/${coachId}`);
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
@@ -45,7 +45,7 @@ export const getCoachProfile = async (coachId) => {
 // Lấy danh sách người dùng được phân công
 export const getAssignedUsers = async (coachId) => {
   try {
-    const response = await axios.get(`${API_URL}/coaches/${coachId}/users`);
+    const response = await axiosInstance.get(`/coaches/${coachId}/users`);
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
@@ -55,7 +55,7 @@ export const getAssignedUsers = async (coachId) => {
 // Cập nhật thông tin huấn luyện viên
 export const updateCoachProfile = async (coachId, updateData) => {
   try {
-    const response = await axios.put(`${API_URL}/coaches/${coachId}`, updateData);
+    const response = await axiosInstance.put(`/coaches/${coachId}`, updateData);
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
@@ -65,7 +65,7 @@ export const updateCoachProfile = async (coachId, updateData) => {
 // Lấy danh sách huấn luyện viên
 export const getCoachList = async () => {
   try {
-    const response = await axios.get(`${API_URL}/coaches`);
+    const response = await axiosInstance.get('/coaches');
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
@@ -75,7 +75,16 @@ export const getCoachList = async () => {
 // Lấy chi tiết huấn luyện viên
 export const getCoachDetail = async (coachId) => {
   try {
-    const response = await axios.get(`${API_URL}/coaches/${coachId}`);
+    const response = await axiosInstance.get(`/coaches/${coachId}`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+export const deleteCoach = async (coachId) => {
+  try {
+    const response = await axiosInstance.delete(`/coaches/${coachId}`);
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;
