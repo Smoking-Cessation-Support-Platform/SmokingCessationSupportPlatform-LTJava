@@ -209,18 +209,18 @@ const GioiThieu = () => {
         <div className="topbar">
           <div className="topbar-left">
             <img src="/images1/logo.jpg" alt="Logo CaiThuocTot.vn" />
-            <div><strong>CaiThuocTot.vn</strong> - Cổng thông tin cai thuốc lá</div>
+            <div><strong>CaiThuocTot.vn</strong> - Hành trình vì sức khỏe</div>
           </div>
           <div className="auth-links" id="authLinks">
-            <Link to="/register">Đăng ký</Link> |
-            <Link to="/login">Đăng nhập</Link>
+            <Link to="/register" style={{ color: "white" }}>Đăng ký</Link> |
+            <Link to="/login" style={{ color: "white" }}>Đăng nhập</Link>
           </div>
         </div>
       </header>
 
       <nav>
         <Link to="/">Trang chủ</Link>
-        <Link to="/gioithieu">Về chúng tôi</Link>
+        <Link to="/gioithieu" className="nav-active">Về chúng tôi</Link>
         <Link to="/huongdancaithuoc">Hướng dẫn cai thuốc</Link>
         <Link to="/tuvan">Dịch vụ</Link>
         <Link to="/huanluyenvien_home">Dành cho huấn luyện viên</Link>
@@ -253,7 +253,7 @@ const GioiThieu = () => {
         </div>
 
         <footer>
-          <p>© 2025 CaiThuocTot.vn - Bản quyền thuộc về nhóm phát triển</p>
+          <p> 2025 CaiThuocTot.vn - Bản quyền thuộc về nhóm phát triển</p>
           <p>Địa chỉ: 70 Đ. Tô Ký, Tân Chánh Hiệp, Quận 12, Hồ Chí Minh | Email: nhubdq3680@ut.edu.vn | Hotline: 0364155024</p>
         </footer>
       </div>

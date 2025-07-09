@@ -206,8 +206,8 @@ const AdminPage = () => {
                             </Link>
                         </li>
                         <li className="sidebar-item">
-                            <Link to="/thongke">
-                                <span style={{width: 22, display: 'inline-block', textAlign: 'center'}} role="img" aria-label="Thống kê">📊</span> Thống kê
+                            <Link to="/danhsachhuanluyenvien">
+                                <span style={{width: 22, display: 'inline-block', textAlign: 'center'}} role="img" aria-label="Huấn luyện viên">📊</span> Huấn luyện viên
                             </Link>
                         </li>
                         <li className="sidebar-item" onClick={handleLogoutAdmin}>

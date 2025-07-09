@@ -1,6 +1,7 @@
 package demo.uth.java.controller;
 
 import demo.uth.java.dto.CommitmentRequest;
+import demo.uth.java.dto.CommitmentDTO;
 import demo.uth.java.model.Commitment;
 import demo.uth.java.model.User;
 import demo.uth.java.repository.CommitmentRepository;
@@ -43,6 +44,11 @@ public class CommitmentController {
                 return ResponseEntity.badRequest().body(Map.of("error", "User ID is required"));
             }
 
+            if (request.getQuitDate() == null) {
+                logger.error("Quit date is required");
+                return ResponseEntity.badRequest().body(Map.of("error", "Ngày bắt đầu cai thuốc là bắt buộc"));
+            }
+
             Optional<User> userOptional = userRepository.findById(request.getUserId());
             if (userOptional.isEmpty()) {
                 logger.error("User not found with ID: {}", request.getUserId());
@@ -50,24 +56,39 @@ public class CommitmentController {
             }
 
             User user = userOptional.get();
+
+            // Tìm và xóa tất cả cam kết cũ của user
+            List<Commitment> oldCommitments = commitmentRepository.findByUserId(user.getId());
+            if (!oldCommitments.isEmpty()) {
+                logger.info("Deleting {} old commitments for user ID: {}", oldCommitments.size(), user.getId());
+                commitmentRepository.deleteAll(oldCommitments);
+            }
+
+            // Tạo cam kết mới
             Commitment commitment = new Commitment();
             commitment.setUser(user);
             commitment.setCommitmentText(request.getCommitmentText());
-            commitment.setStartDate(request.getQuitDate() != null ? request.getQuitDate() : LocalDate.now());
+            commitment.setStartDate(request.getQuitDate());
             commitment.setStatus("active");
 
-            // Update user's quit date if provided
-            if (request.getQuitDate() != null) {
-                user.setQuitStartDate(request.getQuitDate());
-                userRepository.save(user);
-            }
+            // Luôn cập nhật quit date cho user
+            user.setQuitStartDate(request.getQuitDate());
+            userRepository.save(user);
 
             Commitment savedCommitment = commitmentRepository.save(commitment);
             logger.info("Successfully created commitment with ID: {}", savedCommitment.getId());
 
+            // Convert to DTO before returning
+            CommitmentDTO commitmentDTO = new CommitmentDTO();
+            commitmentDTO.setId(savedCommitment.getId());
+            commitmentDTO.setCommitmentText(savedCommitment.getCommitmentText());
+            commitmentDTO.setStartDate(savedCommitment.getStartDate());
+            commitmentDTO.setStatus(savedCommitment.getStatus());
+            commitmentDTO.setUserId(savedCommitment.getUser().getId());
+
             return ResponseEntity.ok(Map.of(
                 "message", "Cam kết đã được tạo thành công",
-                "commitment", savedCommitment
+                "commitment", commitmentDTO
             ));
 
         } catch (Exception e) {
@@ -90,7 +111,7 @@ public class CommitmentController {
                 ));
             }
 
-            List<Commitment> commitments = commitmentService.getCommitmentsByUserId(userId);
+            List<CommitmentDTO> commitments = commitmentService.getCommitmentsByUserId(userId);
             logger.info("Found {} commitments for user ID: {}", commitments.size(), userId);
 
             return ResponseEntity.ok(commitments);
@@ -131,9 +152,17 @@ public class CommitmentController {
             Commitment updatedCommitment = commitmentRepository.save(commitment);
             logger.info("Successfully updated commitment with ID: {}", commitmentId);
 
+            // Convert to DTO before returning
+            CommitmentDTO commitmentDTO = new CommitmentDTO();
+            commitmentDTO.setId(updatedCommitment.getId());
+            commitmentDTO.setCommitmentText(updatedCommitment.getCommitmentText());
+            commitmentDTO.setStartDate(updatedCommitment.getStartDate());
+            commitmentDTO.setStatus(updatedCommitment.getStatus());
+            commitmentDTO.setUserId(updatedCommitment.getUser().getId());
+
             return ResponseEntity.ok(Map.of(
                 "message", "Cam kết đã được cập nhật thành công",
-                "commitment", updatedCommitment
+                "commitment", commitmentDTO
             ));
 
         } catch (Exception e) {

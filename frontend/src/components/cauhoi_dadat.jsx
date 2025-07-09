@@ -90,8 +90,12 @@ const CauHoiDaDat = () => {
         <>
             <style>{`
                 * { box-sizing: border-box; }
-                html, body {
+                html {
                     height: 100%;
+                }
+                
+                body {
+                    min-height: 100vh;
                     margin: 0;
                     font-family: 'Roboto', sans-serif;
                     background: #fff;
@@ -99,7 +103,8 @@ const CauHoiDaDat = () => {
                     line-height: 1.6;
                     display: flex;
                     flex-direction: column;
-                    min-height: 100vh;
+                    position: relative;
+                    padding-bottom: 60px; /* Space for footer */
                 }
 
                 header {
@@ -151,16 +156,33 @@ const CauHoiDaDat = () => {
                 .section {
                     padding: 40px 0;
                     margin: auto;
-                    flex-grow: 1;
                     width: calc(100% - 6cm);
                     margin-left: 3cm;
                     margin-right: 3cm;
+                    flex: 1 0 auto; /* This will push the footer down */
                 }
 
                 .section h2 {
                     text-align: center;
                     margin-bottom: 10px;
                     color: #004d40;
+                }
+
+                footer {
+                    background: #004d40;
+                    color: white;
+                    text-align: center;
+                    padding: 20px 0;
+                    position: fixed;
+                    bottom: 0;
+                    width: 100%;
+                    z-index: 1000;
+                    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+                }
+                
+                footer p {
+                    margin: 10px 0;
+                    font-size: 16px;
                 }
 
                 .filters {
@@ -259,14 +281,6 @@ const CauHoiDaDat = () => {
                     justify-content: center;
                 }
 
-                footer {
-                    background: #004d40;
-                    color: #fff;
-                    padding: 20px;
-                    text-align: center;
-                    flex-shrink: 0;
-                }
-
                 .back-btn {
                     background-color: #004d40;
                     color: white;
@@ -303,8 +317,28 @@ const CauHoiDaDat = () => {
                 .logout-btn:hover {
                     background: rgba(255,255,255,0.1);
                 }
+
+                .page-wrapper {
+                    flex: 1 0 auto;
+                    width: 100%;
+                }
+
+                footer {
+                    background: #004d40;
+                    color: #fff;
+                    padding: 20px;
+                    text-align: center;
+                    flex-shrink: 0;
+                    font-size: 16px;
+                    width: 100%;
+                }
+
+                footer p {
+                    margin: 8px 0;
+                }
             `}</style>
 
+            <div className="page-wrapper">
             <header>
                 <div className="topbar">
                     <div className="topbar-left">
@@ -406,6 +440,7 @@ const CauHoiDaDat = () => {
                 </div>
             </section>
 
+            </div>
             <footer>
                 <p>© 2025 CaiThuocTot.vn - Bản quyền thuộc về nhóm phát triển</p>
                 <p>Địa chỉ: 70 Đ. Tô Ký, Tân Chánh Hiệp, Quận 12, Hồ Chí Minh | Email: nhubdq3680@ut.edu.vn | Hotline: 0364155024</p>

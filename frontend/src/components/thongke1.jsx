@@ -1,6 +1,7 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Chart, registerables } from 'chart.js'; // Import Chart và registerables từ chart.js
+import { getAllUsers } from '../api/dbApi'; // Thêm dòng này
 
 // Đăng ký tất cả các thành phần cần thiết của Chart.js (biểu đồ, tỉ lệ, element, v.v.)
 Chart.register(...registerables);
@@ -8,11 +9,28 @@ Chart.register(...registerables);
 const AdminStatistics = () => {
     const navigate = useNavigate();
     const chartRef = useRef(null); // Tạo một ref để tham chiếu đến element canvas
+    const [users, setUsers] = useState([]); // Thêm state lưu user
     let chartInstance = null; // Biến để lưu trữ instance của biểu đồ
 
-    // Dữ liệu thống kê mẫu
-    const monthlyData = [15, 18, 12, 19, 11, 17, 0, 0, 0, 0, 0, 0];
-    const totalUsers = monthlyData.reduce((sum, val) => sum + val, 0);
+    // Tính số user mới theo từng tháng dựa trên trường ngày tạo phổ biến
+    const getMonthlyUserCounts = (users) => {
+        const counts = Array(12).fill(0);
+        const currentYear = new Date().getFullYear();
+        users.forEach(user => {
+            let dateStr = user.createdAt || user.created_at || user.dateCreated;
+            if (dateStr) {
+                const date = new Date(dateStr);
+                if (date.getFullYear() === currentYear) {
+                    const month = date.getMonth();
+                    counts[month]++;
+                }
+            }
+        });
+        return counts;
+    };
+
+    const monthlyData = getMonthlyUserCounts(users);
+    const totalUsers = users.length;
 
     // useEffect để kiểm tra đăng nhập và vẽ biểu đồ
     useEffect(() => {
@@ -20,6 +38,11 @@ const AdminStatistics = () => {
         if (!isAdminLoggedIn) {
             navigate('/login-admin');
         }
+
+        // Gọi API lấy danh sách user
+        getAllUsers()
+            .then(users => setUsers(users || []))
+            .catch(() => setUsers([]));
 
         // Đảm bảo canvas đã được render và có sẵn
         if (chartRef.current) {
@@ -80,7 +103,7 @@ const AdminStatistics = () => {
                 chartInstance = null; // Đảm bảo instance được reset
             }
         };
-    }, [navigate, monthlyData]); // Dependency array: Biểu đồ sẽ được vẽ lại nếu dữ liệu thay đổi
+    }, [users.length]); // Chỉ truyền users.length để tránh cảnh báo React
 
     return (
         <>
